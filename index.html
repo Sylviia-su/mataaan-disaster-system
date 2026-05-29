@@ -124,6 +124,7 @@ label.inp-label{font-size:12px;color:#9daacc;display:block;margin-bottom:5px}
 .source-name{font-size:13px;font-weight:700;color:#f0f4ff;margin-bottom:3px}.source-org{font-size:11px;color:var(--muted);margin-bottom:6px}.source-desc{font-size:11px;color:#b0bedd;line-height:1.5;margin-bottom:7px}
 /* map */
 #escape-map,#shelter-map{border-radius:10px;border:1px solid var(--border)}
+@keyframes pulse-marker{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.7}}
 /* report checkboxes */
 .check-group{display:flex;flex-wrap:wrap;gap:8px}
 .check-item{display:flex;align-items:center;gap:6px;background:#1e2a3a;border:1px solid var(--border);padding:7px 11px;border-radius:8px;cursor:pointer;font-size:13px;color:#f0f4ff}
@@ -381,6 +382,7 @@ label.inp-label{font-size:12px;color:#9daacc;display:block;margin-bottom:5px}
         <button onclick="checkRoute('home')" class="btn btn-amber" style="flex:1;padding:11px">🤖 AI 路況檢查</button>
       </div>
       <div id="route-check-home" style="display:none;margin-top:10px"></div>
+      <div style="margin-top:8px;padding:9px 12px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);border-radius:8px;font-size:11px;color:#fde68a">⚠️ AI 可能會出錯，請謹慎查核使用。路況分析結果僅供參考，請以政府公告為準。</div>
     </div>
 
     <!-- 公共區域設定 -->
@@ -407,6 +409,7 @@ label.inp-label{font-size:12px;color:#9daacc;display:block;margin-bottom:5px}
         <button onclick="checkRoute('work')" class="btn btn-amber" style="flex:1;padding:11px">🤖 AI 路況檢查</button>
       </div>
       <div id="route-check-work" style="display:none;margin-top:10px"></div>
+      <div style="margin-top:8px;padding:9px 12px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);border-radius:8px;font-size:11px;color:#fde68a">⚠️ AI 可能會出錯，請謹慎查核使用。路況分析結果僅供參考，請以政府公告為準。</div>
     </div>
   </div>
 </div>
@@ -527,6 +530,30 @@ label.inp-label{font-size:12px;color:#9daacc;display:block;margin-bottom:5px}
     <div class="card-title">已送出的回報紀錄</div>
     <div id="report-log"><div style="color:var(--muted);font-size:13px;text-align:center;padding:14px 0">尚未送出任何回報</div></div>
   </div>
+
+  <!-- 居民回報地圖 -->
+  <div class="card">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;gap:10px">
+      <div>
+        <div style="font-size:13px;font-weight:700;color:#f0f4ff;margin-bottom:3px">📍 居民回報地圖</div>
+        <div style="font-size:12px;color:#9daacc;line-height:1.6">
+          居民回報後由<strong style="color:#b0bedd">情資中心統整查核</strong>，確認後才顯示於地圖上。<br>
+          地圖標記代表經情資中心審核的有效回報地點，不代表即時災情。
+        </div>
+      </div>
+      <span style="flex-shrink:0;font-size:10px;padding:3px 8px;border-radius:6px;background:rgba(245,158,11,.15);color:#fde68a;font-weight:700;white-space:nowrap">情資中心審核後顯示</span>
+    </div>
+    <div id="report-map" style="height:300px;border-radius:9px;border:1px solid var(--border)"></div>
+    <div style="display:flex;gap:12px;margin-top:10px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#9daacc"><span style="width:12px;height:12px;border-radius:50%;background:#86efac;display:inline-block"></span>安全</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#9daacc"><span style="width:12px;height:12px;border-radius:50%;background:#fde68a;display:inline-block"></span>受傷</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#9daacc"><span style="width:12px;height:12px;border-radius:50%;background:#fca5a5;display:inline-block"></span>受困</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#9daacc"><span style="width:12px;height:12px;border-radius:50%;background:#ddd6fe;display:inline-block"></span>代報他人</div>
+    </div>
+    <div style="margin-top:10px;padding:10px 12px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);border-radius:8px;font-size:11px;color:#fde68a">
+      ⚠️ 地圖上的標記僅為模擬展示。實際部署時，回報資料須經情資中心人工查核後，才會更新至地圖。
+    </div>
+  </div>
 </div>
 
 <!-- ══ PAGE 5：AI 影像辨識 ═══════════════════════════════ -->
@@ -534,33 +561,87 @@ label.inp-label{font-size:12px;color:#9daacc;display:block;margin-bottom:5px}
   <div class="card">
     <div class="card-title">🤖 AI 影像辨識 — 通報升級</div>
     <div style="font-size:13px;color:#b0bedd;margin-bottom:14px;line-height:1.6">
-      上傳現場照片，Claude Vision 自動判斷積水深度、坍方類型，產出結構化風險資料（JSON），可直接標註至防災地圖。
+      上傳現場照片，Claude Vision 自動判斷積水深度、坍方類型，產出結構化風險資料（JSON），可直接標註至防災地圖。也可不上傳照片，直接人工輸入災況。
     </div>
 
-    <!-- 上傳區 -->
-    <div class="upload-zone" onclick="document.getElementById('img-upload').click()">
+    <!-- 上傳區（移至最上方） -->
+    <div class="upload-zone" onclick="document.getElementById('img-upload').click()" style="margin-bottom:14px">
       <input type="file" id="img-upload" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
       <div style="font-size:32px;margin-bottom:8px">📸</div>
-      <div style="font-size:14px;font-weight:700;color:#ddd6fe;margin-bottom:4px">點擊或拖曳上傳現場照片</div>
-      <div style="font-size:12px;color:#9daacc">支援 JPG / PNG，建議 5MB 以下</div>
+      <div style="font-size:14px;font-weight:700;color:#ddd6fe;margin-bottom:4px">點擊或拖曳上傳現場照片（選填）</div>
+      <div style="font-size:12px;color:#9daacc">上傳後可讓 AI 自動判斷災況，也可不上傳直接人工填寫</div>
     </div>
 
     <!-- 預覽 -->
-    <div id="img-preview-wrap" style="display:none;margin-top:12px">
+    <div id="img-preview-wrap" style="display:none;margin-bottom:14px">
       <img id="img-preview" style="width:100%;max-height:280px;object-fit:contain;border-radius:9px;border:1px solid var(--border)"/>
       <div style="display:flex;gap:8px;margin-top:10px">
-        <button onclick="analyzeImage()" class="btn btn-purple" style="flex:1;padding:11px">🔍 AI 分析影像</button>
+        <button onclick="analyzeImage()" class="btn btn-purple" style="flex:1;padding:11px">🔍 AI 自動分析影像</button>
         <button onclick="clearImage()" class="btn btn-red" style="padding:11px 14px">✕</button>
       </div>
     </div>
 
-    <!-- AI 結果 -->
+    <!-- AI 載入中 -->
     <div id="ai-loading" style="display:none;text-align:center;padding:20px;color:#9daacc;font-size:13px">
       <div style="font-size:24px;margin-bottom:8px">🤖</div>Claude Vision 分析中，請稍候...
     </div>
 
+    <!-- 地點輸入 -->
+    <div style="background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.2);border-radius:10px;padding:14px;margin-bottom:14px">
+      <div style="font-size:13px;font-weight:700;color:#bfdbfe;margin-bottom:10px">📍 回報地點</div>
+      <div style="display:grid;gap:10px">
+        <div>
+          <label class="inp-label">地址（手動輸入）</label>
+          <input id="ai-location-text" class="inp" type="text" placeholder="例：花蓮縣光復鄉省道193線42公里處"/>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button onclick="getAiLocation()" class="btn btn-blue" style="padding:8px 12px;font-size:12px;flex-shrink:0">📍 GPS 定位</button>
+          <div id="ai-location-status" style="font-size:11px;color:#9daacc;flex:1"></div>
+        </div>
+        <div id="ai-coords-wrap" style="display:none;background:#0d1117;border:1px solid rgba(59,130,246,.2);border-radius:8px;padding:9px 11px">
+          <div style="font-size:11px;color:#9daacc;margin-bottom:3px">📡 GPS 座標</div>
+          <div id="ai-coords-text" style="font-size:12px;color:#bfdbfe;font-family:monospace"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 人工輸入災況 -->
+    <div style="background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:14px;margin-bottom:14px">
+      <div style="font-size:13px;font-weight:700;color:#fca5a5;margin-bottom:10px">🚨 災況資訊（可人工輸入或由 AI 自動填入）</div>
+      <div style="display:grid;gap:10px">
+        <div>
+          <label class="inp-label">災害類型</label>
+          <select id="ai-hazard-manual" class="inp">
+            <option value="">請選擇或由 AI 自動判斷</option>
+            <option value="積水">積水</option>
+            <option value="坍方">坍方 / 土石流</option>
+            <option value="道路損毀">道路損毀</option>
+            <option value="建物受損">建物受損</option>
+            <option value="橋樑損毀">橋樑損毀</option>
+            <option value="電線桿倒塌">電線桿倒塌</option>
+            <option value="無明顯災害">無明顯災害</option>
+          </select>
+        </div>
+        <div>
+          <label class="inp-label">嚴重程度</label>
+          <select id="ai-severity-manual" class="inp">
+            <option value="">請選擇或由 AI 自動判斷</option>
+            <option value="low">低（輕微，可通行）</option>
+            <option value="medium">中（需注意，謹慎通行）</option>
+            <option value="high">高（危險，建議迴避）</option>
+            <option value="critical">極高（嚴重，禁止通行）</option>
+          </select>
+        </div>
+        <div>
+          <label class="inp-label">補充說明（選填）</label>
+          <textarea id="ai-note-manual" class="inp" placeholder="例：積水深度約膝蓋，路面看不到，有車輛受困" style="height:68px;resize:none"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI 結果 -->
     <div id="ai-result-wrap" style="display:none;margin-top:14px">
-      <div style="font-size:13px;font-weight:700;color:#ddd6fe;margin-bottom:8px">📋 AI 分析結果</div>
+      <div style="font-size:13px;font-weight:700;color:#ddd6fe;margin-bottom:8px">📋 AI 分析結果 <span style="font-size:11px;color:#9daacc;font-weight:400">（可在上方欄位手動修改後再送出）</span></div>
       <div id="ai-summary" style="background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.25);border-radius:9px;padding:12px;margin-bottom:10px;font-size:13px;color:#b0bedd;line-height:1.6"></div>
       <div style="font-size:12px;font-weight:700;color:#9daacc;margin-bottom:6px">📦 結構化輸出（JSON）</div>
       <pre id="ai-json" class="ai-result"></pre>
@@ -569,6 +650,22 @@ label.inp-label{font-size:12px;color:#9daacc;display:block;margin-bottom:5px}
         <button onclick="copyJson()" class="btn btn-blue" style="padding:11px 14px;font-size:13px">📋 複製 JSON</button>
       </div>
       <div id="ai-map" style="height:260px;margin-top:12px;border-radius:10px;border:1px solid var(--border);display:none"></div>
+    </div>
+
+    <!-- 人工直接送出（不需 AI） -->
+    <div style="margin-top:14px">
+      <button onclick="submitManualReport()" class="btn btn-red" style="width:100%;padding:12px;font-size:14px">
+        📡 直接送出人工回報（不需 AI 分析）
+      </button>
+    </div>
+
+    <!-- AI 免責聲明 -->
+    <div style="margin-top:16px;padding:12px 14px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.25);border-radius:9px;display:flex;gap:10px;align-items:flex-start">
+      <span style="font-size:18px;flex-shrink:0">⚠️</span>
+      <div style="font-size:12px;color:#fde68a;line-height:1.7">
+        <strong>AI 可能會出錯，請謹慎查核使用。</strong><br>
+        本功能由 AI 模型自動分析影像，結果僅供參考，不代表官方災情認定。實際狀況請以政府機關公告及現場人員判斷為準。分析結果送出前，請由情資中心人員人工查核確認後再標註發布。
+      </div>
     </div>
   </div>
 </div>
@@ -636,6 +733,7 @@ function switchTab(name) {
   else if(name==='escape') {
     setTimeout(()=>{ Object.values(escapeMaps).forEach(m=>m?.invalidateSize()); }, 100);
   }
+  if(name==='report') setTimeout(()=>{ initReportMap(); if(reportMapInst) reportMapInst.invalidateSize(); }, 150);
 }
 
 // ══════════════════════════════════════════════════════
@@ -920,19 +1018,70 @@ function getLocation(){
 }
 
 const REPORT_LOG=[];
+let reportMapInst=null;
+const reportMarkers=[];
+
+// 初始化回報地圖
+function initReportMap(){
+  if(reportMapInst) return;
+  reportMapInst=L.map('report-map').setView([23.6432,121.4187],13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    attribution:'© OpenStreetMap contributors',maxZoom:19
+  }).addTo(reportMapInst);
+  // 預設幾個模擬已審核的回報標記
+  const demoReports=[
+    {lat:23.6320,lng:121.4050,status:'injured',name:'居民A',loc:'大馬村',people:2,time:'10:32'},
+    {lat:23.6478,lng:121.4267,status:'safe',  name:'居民B',loc:'光榮村',people:4,time:'10:45'},
+    {lat:23.6389,lng:121.4187,status:'trapped',name:'居民C',loc:'省道193線',people:1,time:'11:02'},
+  ];
+  const statusColor={safe:'#86efac',injured:'#fde68a',trapped:'#fca5a5',proxy:'#ddd6fe'};
+  const statusLabel={safe:'安全',injured:'受傷',trapped:'受困',proxy:'代報'};
+  demoReports.forEach(r=>{
+    const icon=L.divIcon({
+      html:`<div style="width:14px;height:14px;border-radius:50%;background:${statusColor[r.status]};border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4)"></div>`,
+      className:'',iconSize:[14,14],iconAnchor:[7,7]
+    });
+    L.marker([r.lat,r.lng],{icon}).addTo(reportMapInst)
+     .bindPopup(`<div style="font-size:12px;line-height:1.7"><strong>${statusLabel[r.status]}</strong>・${r.loc}<br>${r.people}人・${r.time}<br><span style="font-size:10px;color:#888">✅ 情資中心已審核</span></div>`);
+  });
+}
+
+function addReportMarker(entry){
+  if(!reportMapInst) initReportMap();
+  // 若有 GPS 座標，使用真實座標；否則用隨機偏移示意
+  const statusColor={safe:'#86efac',injured:'#fde68a',trapped:'#fca5a5',proxy:'#ddd6fe'};
+  const statusLabel={safe:'安全',injured:'受傷',trapped:'受困',proxy:'代報'};
+  const lat=entry.coords ? parseFloat(entry.coords.lat) : 23.6432 + (Math.random()-.5)*.02;
+  const lng=entry.coords ? parseFloat(entry.coords.lng) : 121.4187 + (Math.random()-.5)*.02;
+  const icon=L.divIcon({
+    html:`<div style="width:16px;height:16px;border-radius:50%;background:${statusColor[entry.status]||'#9daacc'};border:2px solid #fff;box-shadow:0 1px 6px rgba(0,0,0,.5);animation:pulse-marker 1.5s ease infinite"></div>`,
+    className:'',iconSize:[16,16],iconAnchor:[8,8]
+  });
+  const t=new Date(entry.timestamp).toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'});
+  const marker=L.marker([lat,lng],{icon}).addTo(reportMapInst)
+    .bindPopup(`<div style="font-size:12px;line-height:1.8"><strong>${statusLabel[entry.status]||entry.status}</strong>・${entry.location}<br>${entry.people}人・${t}<br>${entry.triage?entry.triage+'<br>':''}<span style="font-size:10px;color:#f59e0b">⏳ 待情資中心審核</span></div>`);
+  reportMapInst.setView([lat,lng],14);
+  reportMarkers.push(marker);
+}
+
 function submitReport(){
   const name=document.getElementById('rpt-name').value.trim();
   const loc=document.getElementById('rpt-location').value||'未填寫';
   const ppl=document.getElementById('rpt-people').value||'1';
   const note=document.getElementById('rpt-note').value;
   const helps=[...document.querySelectorAll('#page-report .check-item input:checked')].map(c=>c.value);
-  const consciousness=document.getElementById('rpt-consciousness')?.value;
-  const mobility=document.getElementById('rpt-mobility')?.value;
   const triage=document.getElementById('triage-result')?.textContent||'';
   const entry={timestamp:new Date().toISOString(),status:selectedStatus,name:name||'匿名',location:loc,coords:userCoords,people:ppl,needs:helps,triage,note};
   REPORT_LOG.unshift(entry);
   renderReportLog();
-  showToast('✅ 回報已送出，應變中心將盡快處理');
+  // 加到地圖
+  addReportMarker(entry);
+  // 捲到地圖
+  setTimeout(()=>{
+    document.getElementById('report-map').scrollIntoView({behavior:'smooth',block:'center'});
+    if(reportMapInst) reportMapInst.invalidateSize();
+  },300);
+  showToast('✅ 回報已送出，標記已加入地圖，待情資中心審核後正式顯示');
   document.getElementById('report-detail').style.display='none';
   document.getElementById('location-coords').style.display='none';
   document.getElementById('location-status').textContent='';
@@ -962,6 +1111,64 @@ function renderReportLog(){
 // ══════════════════════════════════════════════════════
 let currentImageBase64=null;
 let aiMapInst=null;
+let aiCoords=null;
+
+// AI 頁 GPS 定位
+function getAiLocation(){
+  const status=document.getElementById('ai-location-status');
+  status.textContent='⏳ 定位中...';status.style.color='#9daacc';
+  if(!navigator.geolocation){status.textContent='⚠️ 不支援定位';status.style.color='#fca5a5';return;}
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const lat=pos.coords.latitude.toFixed(6), lng=pos.coords.longitude.toFixed(6);
+    aiCoords={lat,lng};
+    status.textContent='✅ 定位成功';status.style.color='#86efac';
+    const wrap=document.getElementById('ai-coords-wrap');
+    wrap.style.display='block';
+    document.getElementById('ai-coords-text').textContent=`緯度：${lat}　經度：${lng}`;
+    const cur=document.getElementById('ai-location-text').value;
+    if(!cur) document.getElementById('ai-location-text').value=`GPS (${lat}, ${lng})`;
+    else document.getElementById('ai-location-text').value=`${cur}｜GPS: ${lat},${lng}`;
+  },err=>{
+    const msgs={1:'已拒絕定位權限',2:'無法取得位置',3:'定位逾時'};
+    status.textContent='⚠️ '+(msgs[err.code]||'定位失敗')+'，請手動輸入地址';
+    status.style.color='#fca5a5';
+  },{timeout:10000,enableHighAccuracy:true});
+}
+
+// 人工直接送出（不需 AI）
+function submitManualReport(){
+  const loc=document.getElementById('ai-location-text').value;
+  const hazard=document.getElementById('ai-hazard-manual').value;
+  const severity=document.getElementById('ai-severity-manual').value;
+  const note=document.getElementById('ai-note-manual').value;
+  if(!loc){showToast('⚠️ 請填寫地點');return;}
+  if(!hazard){showToast('⚠️ 請選擇災害類型');return;}
+  const manual={
+    hazard_type: hazard,
+    severity: severity||'unknown',
+    description: note||hazard,
+    immediate_action: severity==='critical'||severity==='high'?'禁止通行，請迴避此路段':'謹慎通行，注意安全',
+    safe_for_evacuation: severity!=='critical'&&severity!=='high',
+    location: loc,
+    coords: aiCoords,
+    source: '人工回報',
+    timestamp: new Date().toISOString()
+  };
+  document.getElementById('ai-result-wrap').style.display='block';
+  const sevColor={low:'#86efac',medium:'#fde68a',high:'#fca5a5',critical:'#fca5a5',unknown:'#9daacc'};
+  document.getElementById('ai-summary').innerHTML=`
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+      <span style="font-size:20px">${hazard==='無明顯災害'?'✅':'⚠️'}</span>
+      <strong style="font-size:14px;color:#f0f4ff">${hazard}</strong>
+      <span style="padding:2px 8px;border-radius:6px;background:${sevColor[severity]||'#9daacc'}22;color:${sevColor[severity]||'#9daacc'};font-size:11px;font-weight:700">${(severity||'未填寫').toUpperCase()}</span>
+      <span style="padding:2px 7px;border-radius:5px;background:rgba(59,130,246,.2);color:#93c5fd;font-size:10px;font-weight:700">人工回報</span>
+    </div>
+    <div style="color:#b0bedd;margin-bottom:5px">${note||'（無補充說明）'}</div>
+    <div style="font-size:12px;color:#9daacc;margin-top:4px">地點：${loc}</div>
+    <div style="margin-top:6px"><span style="font-size:12px;font-weight:700;color:${manual.safe_for_evacuation?'#86efac':'#fca5a5'}">${manual.safe_for_evacuation?'✅ 此路線可通行疏散':'🚫 此路線不建議通行'}</span></div>`;
+  document.getElementById('ai-json').textContent=JSON.stringify(manual,null,2);
+  showToast('✅ 人工回報已建立，可點「標註至防災地圖」送出');
+}
 
 function handleImageUpload(e){
   const file=e.target.files[0];
@@ -1032,6 +1239,10 @@ async function analyzeImage(){
       <div style="font-size:12px;color:#9daacc;margin-top:5px">建議行動：${parsed.immediate_action}</div>
       <div style="margin-top:6px"><span style="font-size:12px;font-weight:700;color:${parsed.safe_for_evacuation?'#86efac':'#fca5a5'}">${parsed.safe_for_evacuation?'✅ 此路線可通行疏散':'🚫 此路線不建議通行'}</span></div>`;
     document.getElementById('ai-json').textContent=JSON.stringify(parsed,null,2);
+    // 同步回人工輸入欄位，讓使用者可以修改
+    if(parsed.hazard_type) document.getElementById('ai-hazard-manual').value=parsed.hazard_type;
+    if(parsed.severity) document.getElementById('ai-severity-manual').value=parsed.severity;
+    if(parsed.description) document.getElementById('ai-note-manual').value=parsed.description+(parsed.water_depth_estimate?`\n積水深度：${parsed.water_depth_estimate}`:'');
   }catch(err){
     document.getElementById('ai-loading').style.display='none';
     // Demo fallback
@@ -1046,9 +1257,31 @@ function markOnMap(){
   const mapEl=document.getElementById('ai-map');
   mapEl.style.display='block';
   if(aiMapInst){aiMapInst.remove();}
-  aiMapInst=L.map('ai-map').setView([23.6432,121.4187],14);
+  // 讀取人工輸入或 AI 結果
+  const hazard=document.getElementById('ai-hazard-manual').value||'災情回報';
+  const severity=document.getElementById('ai-severity-manual').value||'unknown';
+  const loc=document.getElementById('ai-location-text').value||'未填寫地點';
+  const note=document.getElementById('ai-note-manual').value||'';
+  // 座標：優先用 GPS，否則用花蓮光復鄉預設
+  const lat=aiCoords?parseFloat(aiCoords.lat):23.6355+(Math.random()-.5)*.01;
+  const lng=aiCoords?parseFloat(aiCoords.lng):121.4098+(Math.random()-.5)*.01;
+  const sevColor={low:'#86efac',medium:'#fde68a',high:'#fca5a5',critical:'#ef4444',unknown:'#9daacc'};
+  aiMapInst=L.map('ai-map').setView([lat,lng],15);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors'}).addTo(aiMapInst);
-  L.circleMarker([23.6355,121.4098],{radius:14,color:'#ef4444',fillColor:'#ef4444',fillOpacity:.4,weight:2}).addTo(aiMapInst).bindPopup('⚠️ AI 驗證風險區：積水，嚴重程度 medium').openPopup();
+  L.circleMarker([lat,lng],{
+    radius:16,
+    color:sevColor[severity]||'#9daacc',
+    fillColor:sevColor[severity]||'#9daacc',
+    fillOpacity:.35,
+    weight:2
+  }).addTo(aiMapInst).bindPopup(
+    `<div style="font-size:12px;line-height:1.8">
+      <strong>${hazard}</strong>・${severity.toUpperCase()}<br>
+      📍 ${loc}<br>
+      ${note?note+'<br>':''}
+      <span style="font-size:10px;color:#f59e0b">⏳ 待情資中心審核</span>
+    </div>`
+  ).openPopup();
   showToast('📍 AI 驗證風險區已標註至地圖');
 }
 
