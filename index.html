@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>馬太鞍溪防災整合系統</title>
+<title id="page-title">馬太鞍溪防災整合系統</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -11,8 +11,10 @@
 :root{--bg:#0a0e1a;--surface:#111827;--surface2:#1e2a3a;--border:rgba(255,255,255,0.12);--text:#f0f4ff;--muted:#9daacc;--blue:#3b82f6;--amber:#f59e0b;--red:#ef4444;--green:#22c55e;--nav-h:64px}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;line-height:1.6}
-
-/* ── Desktop: top tabs ───────────────────── */
+.lang-bar{display:flex;gap:4px;padding:8px 16px;background:rgba(0,0,0,.3);border-bottom:1px solid var(--border);justify-content:flex-end;align-items:center;flex-wrap:wrap}
+.lang-btn{padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
+.lang-btn.active{background:var(--surface2);color:#f0f4ff;border-color:rgba(255,255,255,.25)}
+.lang-btn:hover:not(.active){color:#f0f4ff}
 .top-bar{padding:16px 16px 0;margin-bottom:0}
 .tabs{display:flex;gap:3px;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:4px}
 .tab{flex:1;padding:9px 6px;border-radius:7px;border:none;background:transparent;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center}
@@ -21,11 +23,11 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,san
 .bottom-nav{display:none}
 .page-wrap{padding:0 16px 16px}
 .page{display:none}.page.active{display:block}
-
-/* ── Mobile: bottom nav ──────────────────── */
 @media(max-width:640px){
   body{padding-bottom:var(--nav-h)}
   .top-bar{padding:12px 12px 0}
+  .lang-bar{padding:6px 10px}
+  .lang-btn{font-size:11px;padding:4px 8px}
   .tabs{display:none}
   .bottom-nav{display:flex;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);z-index:100;height:var(--nav-h);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   .bottom-nav::-webkit-scrollbar{display:none}
@@ -35,31 +37,22 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,san
   .page-wrap{padding:0 12px 12px}
   .card{padding:14px;border-radius:10px}
   .card-title{font-size:10px}
-  /* stack grids on mobile */
   .grid2,.grid3{grid-template-columns:1fr}
   .exc-grid{grid-template-columns:1fr}
-  /* bigger touch targets */
-  .inp{font-size:16px;padding:11px 12px} /* 16px prevents iOS zoom */
+  .inp{font-size:16px;padding:11px 12px}
   .btn{padding:12px 14px;font-size:14px}
   .level-btn{padding:14px 10px}
   .lb-top{font-size:13px}.lb-desc{font-size:12px}
-  /* flow row becomes vertical on mobile */
   .flow-row{flex-direction:column;align-items:center;overflow-x:visible}
   .fbox{width:100%;max-width:340px}
   .farrow{margin-top:0;padding:3px 0;transform:rotate(90deg)}
-  /* lights bigger on mobile */
   .light-name{font-size:12px}.light-zone{font-size:11px}.light-tag{font-size:11px}
   .lights-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
-  /* toast above bottom nav */
   .toast{bottom:calc(var(--nav-h) + 12px)}
-  /* banner compact */
   .banner-icon{font-size:26px}.banner-level{font-size:16px}
-  /* source grid single col */
   .source-grid{grid-template-columns:1fr}
-  /* AI map */
   #ai-map,#shelter-map,#escape-map-home,#escape-map-work{height:220px !important}
 }
-
 .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px}
 .card-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#b0bedd;margin-bottom:12px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
@@ -78,17 +71,13 @@ select.inp{cursor:pointer}
 label.inp-label{font-size:12px;color:#9daacc;display:block;margin-bottom:5px}
 .lnk{color:#93c5fd;text-decoration:none;font-size:12px}.lnk:hover{text-decoration:underline}
 .tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700}
-.tag-safe{background:rgba(34,197,94,.2);color:#86efac}
-.tag-warn{background:rgba(245,158,11,.2);color:#fde68a}
-.tag-danger{background:rgba(239,68,68,.2);color:#fca5a5}
-.tag-system{background:rgba(139,92,246,.2);color:#ddd6fe}
+.tag-safe{background:rgba(34,197,94,.2);color:#86efac}.tag-warn{background:rgba(245,158,11,.2);color:#fde68a}
+.tag-danger{background:rgba(239,68,68,.2);color:#fca5a5}.tag-system{background:rgba(139,92,246,.2);color:#ddd6fe}
 .tag-diff{background:rgba(245,158,11,.15);color:#fde68a}
 .toast{position:fixed;bottom:18px;right:18px;background:#1e2a3a;border:1px solid var(--border);border-radius:10px;padding:11px 15px;font-size:13px;color:#f0f4ff;opacity:0;transform:translateY(8px);transition:all .3s;z-index:9999;max-width:320px}
 .toast.show{opacity:1;transform:translateY(0)}
-/* banner */
 .banner{border-radius:10px;padding:14px 18px;margin-bottom:12px;border:1px solid var(--border);display:flex;align-items:center;gap:14px;transition:all .4s}
 .banner-icon{font-size:32px}.banner-level{font-size:18px;font-weight:700}.banner-desc{font-size:13px;color:#b0bedd;margin-top:2px}.banner-action{font-size:13px;margin-top:4px;font-weight:600}
-/* lights */
 .lights-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
 .light-card{background:#1e2a3a;border:1px solid var(--border);border-radius:9px;padding:10px;text-align:center;transition:all .3s}
 .light-card.zone-upstream{border-left:3px solid rgba(239,68,68,.5)}.light-card.zone-downtown{border-left:3px solid rgba(245,158,11,.5)}.light-card.zone-shelter{border-left:3px solid rgba(34,197,94,.5)}
@@ -99,7 +88,6 @@ label.inp-label{font-size:12px;color:#9daacc;display:block;margin-bottom:5px}
 @keyframes flash-fast{0%,100%{filter:brightness(1)}50%{filter:brightness(2.5) drop-shadow(0 0 10px #ef4444)}}
 @keyframes flash-urgent{0%,100%{filter:brightness(1)}50%{filter:brightness(3) drop-shadow(0 0 14px #ef4444)}}
 .flash-slow{animation:flash-slow 1.5s infinite}.flash-fast{animation:flash-fast .8s infinite}.flash-urgent{animation:flash-urgent .3s infinite}
-/* level buttons */
 .level-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .level-btn{padding:12px 10px;border-radius:9px;border:1px solid transparent;cursor:pointer;transition:all .15s;text-align:left}
 .level-btn:hover{transform:translateY(-1px);opacity:.9}.level-btn:active{transform:scale(.98)}
@@ -110,29 +98,22 @@ label.inp-label{font-size:12px;color:#9daacc;display:block;margin-bottom:5px}
 .btn-breach-l{background:rgba(239,68,68,.30);color:#fecaca;border-color:rgba(239,68,68,.7)}
 .btn-clear-l{background:rgba(34,197,94,.18);color:#bbf7d0;border-color:rgba(34,197,94,.4);grid-column:1/-1}
 .demo-btn{width:100%;padding:9px;border-radius:8px;margin-top:8px;background:rgba(139,92,246,.18);color:#ddd6fe;border:1px solid rgba(139,92,246,.4);font-size:12px;font-weight:700;cursor:pointer}
-/* tl */
 .tl{display:flex;flex-direction:column}.tl-item{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px}.tl-item:last-child{border-bottom:none}
 .tl-dot{width:9px;height:9px;border-radius:50%;margin-top:3px;flex-shrink:0}.tl-date{font-size:10px;color:var(--muted);min-width:68px}.tl-label{font-weight:700;margin-bottom:2px}.tl-desc{font-size:11px;color:var(--muted)}
-/* log */
 .log-list{max-height:150px;overflow-y:auto}
 .log-item{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px}.log-item:last-child{border-bottom:none}
 .log-time{color:var(--muted);min-width:50px;font-size:10px;margin-top:1px}.log-badge{padding:1px 7px;border-radius:7px;font-size:10px;font-weight:700;min-width:58px;text-align:center;flex-shrink:0}
-/* source cards */
 .source-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
 .source-card{background:#1e2a3a;border:1px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;transition:all .2s;text-decoration:none;display:block}
 .source-card:hover{border-color:rgba(59,130,246,.4);transform:translateY(-2px)}
 .source-name{font-size:13px;font-weight:700;color:#f0f4ff;margin-bottom:3px}.source-org{font-size:11px;color:var(--muted);margin-bottom:6px}.source-desc{font-size:11px;color:#b0bedd;line-height:1.5;margin-bottom:7px}
-/* map */
 #escape-map,#shelter-map{border-radius:10px;border:1px solid var(--border)}
 @keyframes pulse-marker{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.7}}
-/* report checkboxes */
 .check-group{display:flex;flex-wrap:wrap;gap:8px}
 .check-item{display:flex;align-items:center;gap:6px;background:#1e2a3a;border:1px solid var(--border);padding:7px 11px;border-radius:8px;cursor:pointer;font-size:13px;color:#f0f4ff}
-/* AI upload */
 .upload-zone{border:2px dashed rgba(139,92,246,.4);border-radius:10px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(139,92,246,.05)}
 .upload-zone:hover{border-color:rgba(139,92,246,.7);background:rgba(139,92,246,.1)}
 .ai-result{background:#0d1117;border:1px solid rgba(139,92,246,.3);border-radius:10px;padding:14px;margin-top:12px;font-family:monospace;font-size:12px;color:#c4b5fd;white-space:pre-wrap;max-height:260px;overflow-y:auto}
-/* flow */
 .flow-row{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding-bottom:8px}
 .fbox{width:130px;flex-shrink:0;padding:12px 9px;border-radius:9px;text-align:center;border:1.5px solid rgba(59,130,246,.35);background:rgba(59,130,246,.07)}
 .fnum{font-size:9px;font-weight:700;color:#93c5fd;margin-bottom:3px}.ficon{font-size:20px;margin-bottom:4px;display:block}.ftitle{font-size:12px;font-weight:700;color:#f0f4ff;margin-bottom:2px;line-height:1.3}.fdesc{font-size:10px;color:#9daacc;line-height:1.4}
@@ -145,621 +126,1470 @@ label.inp-label{font-size:12px;color:#9daacc;display:block;margin-bottom:5px}
 </head>
 <body>
 
-<div class="top-bar">
-<div style="margin-bottom:12px">
-  <div style="font-size:18px;font-weight:700;color:#f0f4ff">🚦 馬太鞍溪防災整合監測系統</div>
-  <div style="font-size:12px;color:#9daacc;margin-top:3px">路燈警示 × 逃生路徑 × 安全回報 × AI 影像辨識 × 防災積木元件</div>
+<!-- ── Language Bar ── -->
+<div class="lang-bar">
+  <span style="font-size:11px;color:var(--muted);margin-right:4px">🌐</span>
+  <button class="lang-btn active" onclick="setLang('zh')">中文</button>
+  <button class="lang-btn" onclick="setLang('en')">English</button>
+  <button class="lang-btn" onclick="setLang('vi')">Tiếng Việt</button>
+  <button class="lang-btn" onclick="setLang('ja')">日本語</button>
+  <button class="lang-btn" onclick="setLang('ko')">한국어</button>
 </div>
 
-<div class="tabs">
-  <button class="tab active" onclick="switchTab('flow')">👥 使用者流程</button>
-  <button class="tab" onclick="switchTab('control')">🚦 路燈控制</button>
-  <button class="tab" onclick="switchTab('escape')">🗺️ 逃生路徑</button>
-  <button class="tab" onclick="switchTab('report')">🆘 安全回報</button>
-  <button class="tab" onclick="switchTab('ai')">🤖 AI 影像</button>
-  <button class="tab" onclick="switchTab('monitor')">📊 監測資料</button>
-  <button class="tab" onclick="switchTab('sources')">🔗 資料來源</button>
-</div>
+<!-- ── Top Bar ── -->
+<div class="top-bar">
+  <div style="margin-bottom:12px">
+    <div id="hdr-title" style="font-size:18px;font-weight:700;color:#f0f4ff"></div>
+    <div id="hdr-sub" style="font-size:12px;color:#9daacc;margin-top:3px"></div>
+  </div>
+  <div class="tabs" id="top-tabs"></div>
 </div>
 
 <!-- Mobile bottom nav -->
-<nav class="bottom-nav">
-  <button class="bnav-btn active" onclick="switchTab('flow')"><span class="bnav-icon">👥</span>流程</button>
-  <button class="bnav-btn" onclick="switchTab('control')"><span class="bnav-icon">🚦</span>路燈</button>
-  <button class="bnav-btn" onclick="switchTab('escape')"><span class="bnav-icon">🗺️</span>逃生</button>
-  <button class="bnav-btn" onclick="switchTab('report')"><span class="bnav-icon">🆘</span>回報</button>
-  <button class="bnav-btn" onclick="switchTab('ai')"><span class="bnav-icon">🤖</span>AI 影像</button>
-  <button class="bnav-btn" onclick="switchTab('monitor')"><span class="bnav-icon">📊</span>監測</button>
-  <button class="bnav-btn" onclick="switchTab('sources')"><span class="bnav-icon">🔗</span>來源</button>
-</nav>
+<nav class="bottom-nav" id="bottom-nav"></nav>
 
 <div class="page-wrap">
+  <!-- Pages rendered by JS -->
+  <div id="page-flow" class="page active"></div>
+  <div id="page-control" class="page"></div>
+  <div id="page-escape" class="page"></div>
+  <div id="page-report" class="page"></div>
+  <div id="page-ai" class="page"></div>
+  <div id="page-monitor" class="page"></div>
+  <div id="page-sources" class="page"></div>
+</div>
 
-<!-- ══ PAGE 1：使用者流程 ══════════════════════════════ -->
-<div id="page-flow" class="page active">
+<div class="toast" id="toast"></div>
 
-  <!-- 主流程 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+// ══════════════════════════════════════════════════════
+// 翻譯字典
+// ══════════════════════════════════════════════════════
+const LANGS = {
+zh: {
+  title:'🚦 馬太鞍溪防災整合監測系統',
+  subtitle:'路燈警示 × 逃生路徑 × 安全回報 × AI 影像辨識 × 防災積木元件',
+  tabs:['👥 使用者流程','🚦 路燈控制','🗺️ 逃生路徑','🆘 安全回報','🤖 AI 影像','📊 監測資料','🔗 資料來源'],
+  bnav:['👥\n流程','🚦\n路燈','🗺️\n逃生','🆘\n回報','🤖\nAI','📊\n監測','🔗\n來源'],
+  // 使用者流程
+  flow_main_title:'🏠 主流程 — 一般居民（林小姐，38歲，光復鄉大馬村）',
+  flow_main_sub:'最常見的使用情境',
+  flow_main_tag:'主流程',
+  flow_steps:[
+    {num:'STEP 01',icon:'📱',title:'收到 LINE 警報',desc:'LINE Bot 推送警戒等級與疏散指令'},
+    {num:'STEP 02',icon:'🗺️',title:'查看逃生路徑',desc:'開啟地圖，顯示預設家→收容所路線'},
+    {num:'STEP 03',icon:'🔴',title:'沿路燈疏散',desc:'危險區閃紅，收容所方向閃綠，跟燈走'},
+    {num:'STEP 04',icon:'🏫',title:'抵達收容所',desc:'掃描 QR Code 或在 LINE Bot 回報安全'},
+    {num:'STEP 05',icon:'📸',title:'AI 影像回報',desc:'上傳現場照片，AI 自動判斷風險類型'},
+    {num:'STEP 06',icon:'✅',title:'資料同步中心',desc:'系統彙整，更新收容人數與需求地圖'},
+  ],
+  flow_exc_title:'⚠️ 例外路徑 — 特殊族群與角色',
+  flow_exc_sub:'≠ 標籤代表與主流程的差異',
+  exc:[
+    {icon:'👴',name:'陳阿公，74歲',role:'太巴塱村獨居老人',pain:'不用智慧型手機、聽力退化、行動不便，子女在外縣市。',steps:[
+      {t:'路燈閃紅光',d:'從窗戶看到異常閃爍',tag:'≠ 不靠手機'},
+      {t:'語音電話（台語）',d:'自動撥打家用電話播報疏散指令',tag:'≠ 電話取代LINE'},
+      {t:'按1求助 → 派志工',d:'一鍵完成求助，系統自動指派志工到府',tag:'≠ 需第三方協助'},
+      {t:'志工代為回報',d:'到府後由志工在系統標記已安全抵達',tag:'安全確認'},
+    ],color:'245,158,11'},
+    {icon:'🦺',name:'王大偉，29歲',role:'外縣市志工協調員',pain:'不熟當地地理，不知道哪裡最需要幫助，資源無法精準對接。',steps:[
+      {t:'登記志工資源',d:'LINE Bot 回報人數、物資、預計抵達時間',tag:'≠ 主動提供資源'},
+      {t:'AI 媒合分析任務',d:'系統比對需求熱點與資源，產生建議任務',tag:'AI 輔助決策'},
+      {t:'執行並回報完成',d:'任務完成後打卡，需求地圖自動更新',tag:'≠ 循環任務模式'},
+    ],color:'34,197,94'},
+  ],
+  official_name:'林佳慧，34歲 — 花蓮縣府應變中心值班人員',
+  official_role:'同時收到多方資訊、格式不一，無法快速判斷哪裡最危急。',
+  official_steps:[
+    {num:'01',icon:'📡',title:'監測警戒觸發',desc:'感測器超過閾值自動建議',tag:'自動觸發'},
+    {num:'02',icon:'👤',title:'人工審核確認',desc:'值班人員查看後核准',tag:'≠ 需人工確認'},
+    {num:'03',icon:'📢',title:'多管道同步發布',desc:'路燈、LINE、電話、廣播',tag:''},
+    {num:'04',icon:'📊',title:'即時回報彙整',desc:'民眾回報持續進入',tag:''},
+    {num:'05',icon:'⚠️',title:'AI 警示偵測',desc:'自動標示未回應區域',tag:'AI分析'},
+    {num:'06',icon:'🔓',title:'警報解除確認',desc:'手動發布，路燈恢復白色',tag:'任務結束'},
+  ],
+  cmp_title:'各 Persona 關鍵差異對照',
+  cmp_heads:['比較項目','🏠 一般居民（主）','👴 獨居老人','🦺 志工協調員','🏛️ 應變中心'],
+  cmp_rows:[
+    ['接收警報','LINE Bot 推播','語音電話（台語）','LINE Bot 任務指派','系統儀表板警示'],
+    ['行動觸發','自主查看路徑後疏散','按鍵求助，等待志工','接收任務後主動出發','審核後核准發布'],
+    ['路燈作用','指引疏散方向','第一個警示訊號','引導前往任務地點','遠端控制與確認'],
+    ['回報安全','自行在 LINE Bot 回報','由志工代為回報','回報任務完成','查看全區回應率'],
+  ],
+  // 路燈控制
+  ctrl_standby:'系統待命', ctrl_no_alert:'尚未發布任何警戒',
+  ctrl_levels_title:'警戒等級控制（依真實事件分級）',
+  ctrl_levels:[
+    {cls:'btn-monitor-l',emoji:'🔵',label:'監控中',date:'7/26',desc:'堰塞湖成形，持續觀測'},
+    {cls:'btn-yellow-l',emoji:'🟡',label:'黃色警戒',date:'8/12',desc:'楊柳颱風，預防性疏散'},
+    {cls:'btn-red-l',emoji:'🔴',label:'紅色警戒',date:'9/22',desc:'林保署發布，強制疏散'},
+    {cls:'btn-breach-l',emoji:'🚨',label:'潰壩溢流',date:'9/23',desc:'14:40 溢流，緊急逃生'},
+  ],
+  ctrl_clear:'✅ 解除警報',
+  ctrl_demo:'▶ 播放完整事件時間軸 Demo',
+  ctrl_timeline_title:'真實事件時間軸',
+  ctrl_timeline:[
+    {date:'2025-07-26',label:'堰塞湖形成',desc:'土石崩塌堵塞馬太鞍溪，衛星確認',color:'#3b82f6'},
+    {date:'2025-08-12',label:'首次疏散令',desc:'楊柳颱風，7個村里預防性疏散',color:'#f59e0b'},
+    {date:'2025-09-22',label:'紅色警戒',desc:'水位距溢流口僅5.44m，強制撤離8000人',color:'#ef4444'},
+    {date:'2025-09-23 14:40',label:'潰壩溢流',desc:'樺加沙豪雨，洪水沖入光復鄉，19死',color:'#ef4444'},
+  ],
+  ctrl_total:'路燈總數', ctrl_alert:'警示中', ctrl_normal:'正常 / 收容所',
+  ctrl_lights_title:'路燈即時狀態 ｜ 🔴上游區 🟡市區 🟢收容所',
+  ctrl_logs_title:'操作紀錄', ctrl_logs_empty:'尚無操作紀錄',
+  ctrl_pending_title:'⏳ 待人工確認的路燈變色請求', ctrl_pending_empty:'目前無待確認項目',
+  ctrl_approve:'✅ 核准', ctrl_reject:'❌ 拒絕',
+  ctrl_manual_title:'🔧 人工直接控制單燈',
+  ctrl_sel_light:'選擇路燈', ctrl_color:'燈色', ctrl_flash:'閃爍',
+  ctrl_lights_opts:['全部路燈','SL-001 太巴塱村入口','SL-002 省道193線42K','SL-003 光復鄉公所前','SL-004 馬太鞍溪橋頭','SL-005 光榮村（收容所）','SL-006 大馬村','SL-007 大平村'],
+  ctrl_color_opts:['🔴 紅色（緊急）','🟡 黃色（警戒）','🔵 藍色（監控）','🟢 綠色（收容所）','🤍 白色（正常）'],
+  ctrl_flash_opts:['不閃爍','慢閃（1.5秒）','快閃（0.8秒）','極速閃（0.3秒）'],
+  ctrl_apply:'🔧 立即套用（人工直接控制）',
+  zone_upstream:'上游區', zone_downtown:'市區', zone_shelter:'收容所',
+  light_alert:'警示中', light_normal:'正常', light_shelter:'收容所',
+  // 逃生路徑
+  esc_nearest_title:'🚨 目前位置 — 最近收容所',
+  esc_locate_btn:'📍 立即定位',
+  esc_locate_hint:'點擊「立即定位」取得目前位置，系統自動找出最近的政府指定收容所。',
+  esc_preset_title:'⚙️ 預先設定逃生路徑',
+  esc_home_tab:'🏠 家裡的路線', esc_work_tab:'🏢 公司 / 公共區域',
+  esc_home_addr:'家裡地址', esc_home_shelter:'指定收容所',
+  esc_shelter_opts:['光榮國小（光復鄉公所指定）','光復國中','太巴塱國小'],
+  esc_alt_route:'備用路線說明（選填）',
+  esc_save_home:'💾 儲存家裡路線設定',
+  esc_home_info_title:'📍 目前設定的家裡路線',
+  esc_home_info:'起點：<strong style="color:#f0f4ff">大馬村 12 鄰 3 號</strong><br>路線：沿台 9 線往北步行約 800 公尺<br>終點：<strong style="color:#86efac">光榮國小</strong>（約 12 分鐘）',
+  esc_light_hint:'⚠️ 路燈引導：綠色閃爍 = 安全方向，紅色閃爍 = 危險勿往',
+  esc_nav:'🧭 開始導航', esc_ai_check:'🤖 AI 路況檢查',
+  esc_ai_disclaimer:'⚠️ AI 可能會出錯，請謹慎查核使用。路況分析結果僅供參考，請以政府公告為準。',
+  esc_work_addr:'公司 / 常去地點地址', esc_work_mgr:'管理單位', esc_work_exit:'指定逃生出口',
+  esc_work_shelter:'最近收容所',
+  esc_work_shelter_opts:['光榮國小（步行約 8 分鐘）','光復國中（步行約 12 分鐘）'],
+  esc_save_work:'💾 儲存公共區域路線設定',
+  esc_work_info_title:'🏢 目前設定的公共區域路線',
+  esc_work_info:'由 <strong style="color:#ddd6fe">光復鄉公所</strong> 規劃<br>逃生出口：<strong style="color:#f0f4ff">市場北側出口 → 台 9 線往北</strong><br>最近收容所：<strong style="color:#86efac">光榮國小（約 8 分鐘）</strong>',
+  // 安全回報
+  rpt_title:'🆘 個人安全狀態回報',
+  rpt_step1:'步驟 1 ｜ 我目前的狀況',
+  rpt_btn_safe:'✅ 我安全了', rpt_btn_injured:'🤕 我受傷了', rpt_btn_trapped:'🆘 我受困了', rpt_btn_proxy:'👥 代報他人',
+  rpt_step2:'步驟 2 ｜ 詳細資訊',
+  rpt_name:'姓名', rpt_name_hint:'（選填，匿名亦可）',
+  rpt_location:'目前位置（地址或 GPS，兩者並行）',
+  rpt_gps:'📍 GPS 定位',
+  rpt_gps_coords:'📡 GPS 座標（已自動帶入）',
+  rpt_triage:'急救狀況評估',
+  rpt_c1:'① 意識狀況', rpt_c2:'② 有無外傷', rpt_c3:'③ 可否自行移動', rpt_c4:'④ 呼吸狀況',
+  rpt_c1_opts:['請選擇','清醒，能正常對答','清醒，但意識混亂 / 答非所問','對刺激有反應，但無法對答','無反應（可能失去意識）'],
+  rpt_c2_opts:['請選擇','無明顯外傷','輕微擦傷 / 割傷（已止血）','持續出血（未能止血）','疑似骨折','頭部 / 脊椎受傷（勿移動）','被壓或夾住'],
+  rpt_c3_opts:['請選擇','可自行步行','需要攙扶才能移動','無法移動，需要擔架 / 輪椅','完全無法移動（脊椎 / 骨折疑慮）'],
+  rpt_c4_opts:['請選擇','正常呼吸','呼吸費力 / 急促','無呼吸（需立即 CPR）'],
+  rpt_people:'同行人數（含您自己）',
+  rpt_help:'需要哪些協助？（可複選）',
+  rpt_help_opts:['交通接送','醫療 / 急救','食物飲水','行動輔助（輪椅 / 擔架）','嬰幼兒照護','長輩協助'],
+  rpt_help_vals:['transport','medical','food','mobility','child','senior'],
+  rpt_note:'補充說明（選填）',
+  rpt_submit:'📡 送出回報',
+  rpt_log_title:'已送出的回報紀錄', rpt_log_empty:'尚未送出任何回報',
+  rpt_map_title:'📍 居民回報地圖',
+  rpt_map_desc:'居民回報後由<strong style="color:#b0bedd">情資中心統整查核</strong>，確認後才顯示於地圖上。地圖標記代表經情資中心審核的有效回報地點，不代表即時災情。',
+  rpt_map_badge:'情資中心審核後顯示',
+  rpt_map_legend:['安全','受傷','受困','代報他人'],
+  rpt_map_note:'⚠️ 地圖上的標記僅為模擬展示。實際部署時，回報資料須經情資中心人工查核後，才會更新至地圖。',
+  rpt_status_labels:{safe:'✅ 我安全了',injured:'🤕 我受傷了',trapped:'🆘 我受困了',proxy:'👥 代報他人'},
+  triage_immediate:'🔴 即時（Immediate）— 需立即搶救',
+  triage_delayed:'🟡 延遲（Delayed）— 需要醫療協助',
+  triage_minor:'🟢 輕傷（Minor）— 可自行移動',
+  triage_unknown:'⚠️ 評估中（需更多資訊）',
+  // AI 頁
+  ai_title:'🤖 AI 影像辨識 — 通報升級',
+  ai_desc:'上傳現場照片，Claude Vision 自動判斷積水深度、坍方類型，產出結構化風險資料（JSON），可直接標註至防災地圖。也可不上傳照片，直接人工輸入災況。',
+  ai_upload_title:'點擊或拖曳上傳現場照片（選填）',
+  ai_upload_hint:'上傳後可讓 AI 自動判斷災況，也可不上傳直接人工填寫',
+  ai_analyze:'🔍 AI 自動分析影像',
+  ai_remove:'✕',
+  ai_analyzing:'Claude Vision 分析中，請稍候...',
+  ai_loc_title:'📍 回報地點',
+  ai_loc_addr:'地址（手動輸入）',
+  ai_gps:'📍 GPS 定位',
+  ai_gps_coords:'📡 GPS 座標',
+  ai_hazard_title:'🚨 災況資訊（可人工輸入或由 AI 自動填入）',
+  ai_hazard_type:'災害類型',
+  ai_hazard_opts:['請選擇或由 AI 自動判斷','積水','坍方 / 土石流','道路損毀','建物受損','橋樑損毀','電線桿倒塌','無明顯災害'],
+  ai_hazard_vals:['','積水','坍方','道路損毀','建物受損','橋樑損毀','電線桿倒塌','無明顯災害'],
+  ai_severity:'嚴重程度',
+  ai_severity_opts:['請選擇或由 AI 自動判斷','低（輕微，可通行）','中（需注意，謹慎通行）','高（危險，建議迴避）','極高（嚴重，禁止通行）'],
+  ai_severity_vals:['','low','medium','high','critical'],
+  ai_note:'補充說明（選填）',
+  ai_result_title:'📋 AI 分析結果',
+  ai_result_hint:'（可在上方欄位手動修改後再送出）',
+  ai_mark_map:'📍 標註至防災地圖',
+  ai_copy_json:'📋 複製 JSON',
+  ai_manual_submit:'📡 直接送出人工回報（不需 AI 分析）',
+  ai_disclaimer_title:'AI 可能會出錯，請謹慎查核使用。',
+  ai_disclaimer_body:'本功能由 AI 模型自動分析影像，結果僅供參考，不代表官方災情認定。實際狀況請以政府機關公告及現場人員判斷為準。分析結果送出前，請由情資中心人員人工查核確認後再標註發布。',
+  // 監測資料
+  mon_water_title:'馬太鞍溪水位趨勢（模擬重建數據・僅供展示）',
+  mon_water_link:'→ 水利署即時水位',
+  mon_water_note:'⚠️ 模擬數據，供防災演示使用。',
+  mon_water_link2:'查看即時水位 →',
+  mon_rain_title:'花蓮光復雨量趨勢（模擬重建數據）',
+  mon_rain_link:'→ 水利署即時雨量',
+  mon_rain_note:'⚠️ 模擬數據。',
+  mon_rain_link2:'查看即時雨量 →',
+  mon_ncdr_title:'NCDR 馬太鞍溪堰塞湖監測',
+  mon_ncdr_note:'若未正常載入：',
+  mon_ncdr_link:'直接開啟 →',
+  // 資料來源
+  src_title:'相關監測與資訊來源',
+  src_items:[
+    {icon:'🗺️',name:'NCDR 堰塞湖監測',org:'國家災害防救科技中心',desc:'馬太鞍溪堰塞湖即時監測地圖，含水位、雨量、衛星正射影像',tag:'即時監測',url:'https://watch.ncdr.nat.gov.tw/watch_barrier_map_v2'},
+    {icon:'💧',name:'即時水位監測',org:'水利署防災資訊網',desc:'全台中央管河川即時水位資料，每10分鐘更新',tag:'每10分鐘更新',url:'https://fhy.wra.gov.tw/fhyv2/monitor/water'},
+    {icon:'🌧️',name:'即時雨量監測',org:'水利署防災資訊網',desc:'全台各雨量站即時累積雨量',tag:'即時監測',url:'https://fhy.wra.gov.tw/fhyv2/monitor/rain'},
+    {icon:'📹',name:'即時監控影像',org:'水利署防災資訊網',desc:'馬太鞍溪橋等監控點的即時 CCTV 影像',tag:'即時影像',url:'https://fhy.wra.gov.tw/fhyv2/monitor/cctvTable'},
+    {icon:'🏛️',name:'堰塞湖資訊專區',org:'花蓮縣政府',desc:'官方資訊專區，含最新消息、疏散資訊、收容所位置',tag:'官方公告',url:'https://www.hl.gov.tw/ysh/'},
+    {icon:'🌲',name:'林保署監測系統',org:'農業部林業及自然保育署',desc:'國有林防災應變及堰塞湖監測，含即時影像',tag:'即時影像',url:'https://www.iiicloud.com.tw/FarmlandQlakenew/BarrierLake'},
+    {icon:'🗂️',name:'應變監測圖資',org:'ArcGIS StoryMaps',desc:'堰塞湖應變圖資集合，含衛星影像、影響範圍地圖',tag:'GIS 地圖',url:'https://storymaps.arcgis.com/collections/54779cf3c8314073b1edb6115bc9a9a0'},
+    {icon:'🔌',name:'水位 Open Data API',org:'政府資料開放平台',desc:'水位站即時觀測 API，每10分鐘更新，適合開發者串接',tag:'開放 API',url:'https://data.gov.tw/dataset/25768'},
+    {icon:'⛅',name:'氣象開放資料平台',org:'中央氣象署',desc:'雨量、氣溫、颱風路徑等免費 API，可申請金鑰串接',tag:'開放 API',url:'https://opendata.cwa.gov.tw/about/application'},
+  ],
+},
+en: {
+  title:'🚦 Mataaan River Disaster Monitoring System',
+  subtitle:'Street Light Alert × Evacuation Routes × Safety Report × AI Image Analysis × Modular Components',
+  tabs:['👥 User Flow','🚦 Light Control','🗺️ Evacuation','🆘 Safety Report','🤖 AI Image','📊 Monitor','🔗 Sources'],
+  bnav:['👥\nFlow','🚦\nLights','🗺️\nEscape','🆘\nReport','🤖\nAI','📊\nMonitor','🔗\nSources'],
+  flow_main_title:'🏠 Main Flow — General Resident (Ms. Lin, 38, Dama Village)',
+  flow_main_sub:'Most common use case',
+  flow_main_tag:'Main Flow',
+  flow_steps:[
+    {num:'STEP 01',icon:'📱',title:'Receive LINE Alert',desc:'LINE Bot pushes alert level and evacuation instructions'},
+    {num:'STEP 02',icon:'🗺️',title:'View Evacuation Route',desc:'Open map showing preset home → shelter route'},
+    {num:'STEP 03',icon:'🔴',title:'Follow Street Lights',desc:'Red flash = danger, green flash = shelter direction'},
+    {num:'STEP 04',icon:'🏫',title:'Arrive at Shelter',desc:'Scan QR Code or report safe via LINE Bot'},
+    {num:'STEP 05',icon:'📸',title:'AI Image Report',desc:'Upload photo, AI auto-assesses risk type'},
+    {num:'STEP 06',icon:'✅',title:'Sync to Center',desc:'System aggregates data, updates shelter count'},
+  ],
+  flow_exc_title:'⚠️ Exception Paths — Special Groups & Roles',
+  flow_exc_sub:'≠ Tag indicates difference from main flow',
+  exc:[
+    {icon:'👴',name:'Mr. Chen, 74',role:'Elderly resident, lives alone in Tapalong',pain:'No smartphone, hearing impaired, limited mobility, children work elsewhere.',steps:[
+      {t:'Street light flashes red',d:'Sees unusual flashing from window',tag:'≠ No smartphone needed'},
+      {t:'Automated phone call (Taiwanese)',d:'System calls landline with evacuation instructions',tag:'≠ Phone replaces LINE'},
+      {t:'Press 1 for help → Volunteer dispatched',d:'One button to call for help, system auto-assigns volunteer',tag:'≠ Needs third-party help'},
+      {t:'Volunteer reports safe arrival',d:'Volunteer marks "safely arrived" in system',tag:'Safety confirmed'},
+    ],color:'245,158,11'},
+    {icon:'🦺',name:'Mr. Wang, 29',role:'Volunteer coordinator from another city',pain:'Unfamiliar with local geography, unsure where help is most needed.',steps:[
+      {t:'Register volunteer resources',d:'Report headcount, supplies, ETA via LINE Bot',tag:'≠ Actively offers resources'},
+      {t:'AI task matching',d:'System matches needs hotspots with resources',tag:'AI-assisted decision'},
+      {t:'Execute and report done',d:'Check in after task, need map auto-updates',tag:'≠ Cyclical task mode'},
+    ],color:'34,197,94'},
+  ],
+  official_name:'Ms. Lin, 34 — Hualien County Emergency Response Center Officer',
+  official_role:'Receiving information from multiple sources in inconsistent formats, unable to quickly prioritize.',
+  official_steps:[
+    {num:'01',icon:'📡',title:'Sensor Alert Triggered',desc:'Sensor threshold exceeded, system generates alert suggestion',tag:'Auto trigger'},
+    {num:'02',icon:'👤',title:'Manual Review',desc:'Officer reviews dashboard and approves',tag:'≠ Requires human approval'},
+    {num:'03',icon:'📢',title:'Multi-channel Broadcast',desc:'Lights, LINE, phone, broadcast simultaneously',tag:''},
+    {num:'04',icon:'📊',title:'Real-time Report Aggregation',desc:'Resident reports continuously flowing in',tag:''},
+    {num:'05',icon:'⚠️',title:'AI Alert Detection',desc:'Auto-flags unresponsive zones',tag:'AI analysis'},
+    {num:'06',icon:'🔓',title:'All-clear Confirmation',desc:'Manual release, lights return to white',tag:'Task complete'},
+  ],
+  cmp_title:'Key Differences by Persona',
+  cmp_heads:['Category','🏠 General Resident (Main)','👴 Elderly Alone','🦺 Volunteer Coord.','🏛️ Response Center'],
+  cmp_rows:[
+    ['Receive Alert','LINE Bot push','Voice call (Taiwanese)','LINE Bot task assignment','System dashboard'],
+    ['Action Trigger','Self-navigates evacuation','Press for help, wait for volunteer','Receives task, departs','Approves after review'],
+    ['Street Light Role','Guides evacuation direction','First warning signal','Guides to task location','Remote control & confirm'],
+    ['Report Safety','Self-reports via LINE Bot','Volunteer reports on behalf','Reports task complete','Views response rate'],
+  ],
+  ctrl_standby:'Standby', ctrl_no_alert:'No alert issued yet',
+  ctrl_levels_title:'Alert Level Control (Based on Real Events)',
+  ctrl_levels:[
+    {cls:'btn-monitor-l',emoji:'🔵',label:'Monitoring',date:'7/26',desc:'Dam lake formed, monitoring in progress'},
+    {cls:'btn-yellow-l',emoji:'🟡',label:'Yellow Alert',date:'8/12',desc:'Typhoon Yangliou, precautionary evacuation'},
+    {cls:'btn-red-l',emoji:'🔴',label:'Red Alert',date:'9/22',desc:'Forestry Bureau alert, mandatory evacuation'},
+    {cls:'btn-breach-l',emoji:'🚨',label:'Dam Overflow',date:'9/23',desc:'14:40 overflow — evacuate immediately'},
+  ],
+  ctrl_clear:'✅ Clear Alert',
+  ctrl_demo:'▶ Play Full Timeline Demo',
+  ctrl_timeline_title:'Real Event Timeline',
+  ctrl_timeline:[
+    {date:'2025-07-26',label:'Dam Lake Formed',desc:'Landslide blocks Mataaan River, confirmed by satellite',color:'#3b82f6'},
+    {date:'2025-08-12',label:'First Evacuation',desc:'Typhoon Yangliou, 7 villages precautionary evacuation',color:'#f59e0b'},
+    {date:'2025-09-22',label:'Red Alert',desc:'Water 5.44m from spillway, 8,000 people forcibly evacuated',color:'#ef4444'},
+    {date:'2025-09-23 14:40',label:'Dam Overflow',desc:'Typhoon Huajia heavy rain, flood enters Guangfu, 19 deaths',color:'#ef4444'},
+  ],
+  ctrl_total:'Total Lights', ctrl_alert:'Alerting', ctrl_normal:'Normal / Shelter',
+  ctrl_lights_title:'Real-time Light Status ｜ 🔴Upstream 🟡Downtown 🟢Shelter',
+  ctrl_logs_title:'Operation Log', ctrl_logs_empty:'No logs yet',
+  ctrl_pending_title:'⏳ Light Changes Awaiting Confirmation', ctrl_pending_empty:'No pending items',
+  ctrl_approve:'✅ Approve', ctrl_reject:'❌ Reject',
+  ctrl_manual_title:'🔧 Manual Light Control',
+  ctrl_sel_light:'Select Light', ctrl_color:'Color', ctrl_flash:'Flash Mode',
+  ctrl_lights_opts:['All Lights','SL-001 Tapalong Entrance','SL-002 Hwy 193 Km42','SL-003 Guangfu Township Office','SL-004 Mataaan Bridge','SL-005 Guangrong Village (Shelter)','SL-006 Dama Village','SL-007 Daping Village'],
+  ctrl_color_opts:['🔴 Red (Emergency)','🟡 Yellow (Caution)','🔵 Blue (Monitor)','🟢 Green (Shelter)','🤍 White (Normal)'],
+  ctrl_flash_opts:['No flash','Slow flash (1.5s)','Fast flash (0.8s)','Urgent flash (0.3s)'],
+  ctrl_apply:'🔧 Apply Now (Manual Control)',
+  zone_upstream:'Upstream', zone_downtown:'Downtown', zone_shelter:'Shelter',
+  light_alert:'Alerting', light_normal:'Normal', light_shelter:'Shelter',
+  esc_nearest_title:'🚨 Current Location — Nearest Shelter',
+  esc_locate_btn:'📍 Locate Now',
+  esc_locate_hint:'Click "Locate Now" to find the nearest government-designated evacuation shelter.',
+  esc_preset_title:'⚙️ Pre-set Evacuation Routes',
+  esc_home_tab:'🏠 Home Route', esc_work_tab:'🏢 Office / Public Area',
+  esc_home_addr:'Home Address', esc_home_shelter:'Designated Shelter',
+  esc_shelter_opts:['Guangrong Elementary (Township designated)','Guangfu Junior High','Tapalong Elementary'],
+  esc_alt_route:'Alternate Route (Optional)',
+  esc_save_home:'💾 Save Home Route',
+  esc_home_info_title:'📍 Current Home Route',
+  esc_home_info:'Start: <strong style="color:#f0f4ff">Dama Village No.3</strong><br>Route: Walk north along Hwy 9, ~800m<br>End: <strong style="color:#86efac">Guangrong Elementary</strong> (~12 min)',
+  esc_light_hint:'⚠️ Light guide: Green flash = safe direction, Red flash = danger, do not enter',
+  esc_nav:'🧭 Start Navigation', esc_ai_check:'🤖 AI Route Check',
+  esc_ai_disclaimer:'⚠️ AI may make errors. Route analysis is for reference only. Always verify with official government notices.',
+  esc_work_addr:'Office / Frequent Location Address', esc_work_mgr:'Managing Organization', esc_work_exit:'Designated Exit',
+  esc_work_shelter:'Nearest Shelter',
+  esc_work_shelter_opts:['Guangrong Elementary (~8 min walk)','Guangfu Junior High (~12 min walk)'],
+  esc_save_work:'💾 Save Work Route',
+  esc_work_info_title:'🏢 Current Work/Public Route',
+  esc_work_info:'Planned by <strong style="color:#ddd6fe">Guangfu Township Office</strong><br>Exit: <strong style="color:#f0f4ff">North exit of market → Hwy 9 northbound</strong><br>Nearest shelter: <strong style="color:#86efac">Guangrong Elementary (~8 min)</strong>',
+  rpt_title:'🆘 Personal Safety Report',
+  rpt_step1:'Step 1 | My Current Status',
+  rpt_btn_safe:'✅ I am safe', rpt_btn_injured:'🤕 I am injured', rpt_btn_trapped:'🆘 I am trapped', rpt_btn_proxy:'👥 Report for others',
+  rpt_step2:'Step 2 | Details',
+  rpt_name:'Name', rpt_name_hint:'(Optional, anonymous OK)',
+  rpt_location:'Current Location (address or GPS)',
+  rpt_gps:'📍 GPS Location',
+  rpt_gps_coords:'📡 GPS Coordinates (auto-filled)',
+  rpt_triage:'First Aid Assessment',
+  rpt_c1:'① Consciousness', rpt_c2:'② Injuries', rpt_c3:'③ Mobility', rpt_c4:'④ Breathing',
+  rpt_c1_opts:['Select','Alert and oriented','Alert but confused','Responds to stimulus only','Unresponsive'],
+  rpt_c2_opts:['Select','No visible injury','Minor scrape/cut (bleeding controlled)','Uncontrolled bleeding','Suspected fracture','Head/spine injury (do not move)','Trapped/crushed'],
+  rpt_c3_opts:['Select','Can walk independently','Needs support to walk','Cannot move, needs stretcher/wheelchair','Completely immobile (spinal/fracture concern)'],
+  rpt_c4_opts:['Select','Normal breathing','Labored/rapid breathing','No breathing (needs CPR immediately)'],
+  rpt_people:'Number of people (including yourself)',
+  rpt_help:'What help is needed? (Multiple choice)',
+  rpt_help_opts:['Transportation','Medical / First Aid','Food & Water','Mobility Aid (wheelchair/stretcher)','Infant Care','Elderly Assistance'],
+  rpt_help_vals:['transport','medical','food','mobility','child','senior'],
+  rpt_note:'Additional Notes (Optional)',
+  rpt_submit:'📡 Submit Report',
+  rpt_log_title:'Submitted Reports', rpt_log_empty:'No reports submitted yet',
+  rpt_map_title:'📍 Resident Report Map',
+  rpt_map_desc:'Reports are reviewed by the <strong style="color:#b0bedd">Intelligence Center</strong> before being shown on the map. Markers represent verified reports only.',
+  rpt_map_badge:'Shown after review',
+  rpt_map_legend:['Safe','Injured','Trapped','Reported for others'],
+  rpt_map_note:'⚠️ Map markers are for demo purposes. In real deployment, reports are displayed only after manual review.',
+  rpt_status_labels:{safe:'✅ Safe',injured:'🤕 Injured',trapped:'🆘 Trapped',proxy:'👥 Proxy Report'},
+  triage_immediate:'🔴 Immediate — Needs urgent rescue',
+  triage_delayed:'🟡 Delayed — Needs medical attention',
+  triage_minor:'🟢 Minor — Can move independently',
+  triage_unknown:'⚠️ Assessing (needs more info)',
+  ai_title:'🤖 AI Image Analysis — Enhanced Reporting',
+  ai_desc:'Upload a photo for Claude Vision to automatically assess flood depth and landslide type, outputting structured risk data (JSON) for the disaster map.',
+  ai_upload_title:'Click or drag to upload a photo (optional)',
+  ai_upload_hint:'Upload to let AI assess the situation, or fill in manually without a photo',
+  ai_analyze:'🔍 AI Auto-Analyze Image',
+  ai_remove:'✕',
+  ai_analyzing:'Claude Vision analyzing, please wait...',
+  ai_loc_title:'📍 Report Location',
+  ai_loc_addr:'Address (manual input)',
+  ai_gps:'📍 GPS Location',
+  ai_gps_coords:'📡 GPS Coordinates',
+  ai_hazard_title:'🚨 Disaster Info (manual input or AI auto-fill)',
+  ai_hazard_type:'Hazard Type',
+  ai_hazard_opts:['Select or let AI determine','Flooding','Landslide / Debris Flow','Road Damage','Building Damage','Bridge Damage','Fallen Power Pole','No Visible Hazard'],
+  ai_hazard_vals:['','積水','坍方','道路損毀','建物受損','橋樑損毀','電線桿倒塌','無明顯災害'],
+  ai_severity:'Severity Level',
+  ai_severity_opts:['Select or let AI determine','Low (minor, passable)','Medium (caution, proceed carefully)','High (dangerous, avoid)','Critical (severe, do not enter)'],
+  ai_severity_vals:['','low','medium','high','critical'],
+  ai_note:'Additional Notes (Optional)',
+  ai_result_title:'📋 AI Analysis Result',
+  ai_result_hint:'(Edit fields above before submitting)',
+  ai_mark_map:'📍 Mark on Disaster Map',
+  ai_copy_json:'📋 Copy JSON',
+  ai_manual_submit:'📡 Submit Manual Report (No AI needed)',
+  ai_disclaimer_title:'AI may make errors. Please verify carefully before use.',
+  ai_disclaimer_body:'This feature uses AI to analyze images. Results are for reference only and do not represent official disaster assessments. Always defer to official government announcements and on-site personnel. Have the Intelligence Center verify before publishing.',
+  mon_water_title:'Mataaan River Water Level Trend (Simulated Data — Demo Only)',
+  mon_water_link:'→ WRA Real-time Level',
+  mon_water_note:'⚠️ Simulated data for demo purposes.',
+  mon_water_link2:'View live data →',
+  mon_rain_title:'Guangfu Rainfall Trend (Simulated Data)',
+  mon_rain_link:'→ WRA Real-time Rainfall',
+  mon_rain_note:'⚠️ Simulated data.',
+  mon_rain_link2:'View live data →',
+  mon_ncdr_title:'NCDR Mataaan Dam Lake Monitor',
+  mon_ncdr_note:'If page fails to load: ',
+  mon_ncdr_link:'Open directly →',
+  src_title:'Related Monitoring & Information Sources',
+  src_items:[
+    {icon:'🗺️',name:'NCDR Dam Lake Monitor',org:'National Science and Technology Center for Disaster Reduction',desc:'Real-time dam lake monitoring map with water level, rainfall, satellite imagery',tag:'Live',url:'https://watch.ncdr.nat.gov.tw/watch_barrier_map_v2'},
+    {icon:'💧',name:'Real-time Water Level',org:'Water Resources Agency',desc:'Water level data for major rivers, updated every 10 minutes',tag:'Every 10 min',url:'https://fhy.wra.gov.tw/fhyv2/monitor/water'},
+    {icon:'🌧️',name:'Real-time Rainfall',org:'Water Resources Agency',desc:'Cumulative rainfall from all rain gauges nationwide',tag:'Live',url:'https://fhy.wra.gov.tw/fhyv2/monitor/rain'},
+    {icon:'📹',name:'Live CCTV Footage',org:'Water Resources Agency',desc:'Live camera feeds at Mataaan Bridge and other key monitoring points',tag:'Live Video',url:'https://fhy.wra.gov.tw/fhyv2/monitor/cctvTable'},
+    {icon:'🏛️',name:'Dam Lake Info Zone',org:'Hualien County Government',desc:'Official info zone with latest news, evacuation info, and shelter locations',tag:'Official',url:'https://www.hl.gov.tw/ysh/'},
+    {icon:'🌲',name:'Forestry Bureau Monitor',org:'Forestry and Nature Conservation Agency',desc:'Forest disaster response and dam lake monitoring with live imagery',tag:'Live',url:'https://www.iiicloud.com.tw/FarmlandQlakenew/BarrierLake'},
+    {icon:'🗂️',name:'Disaster GIS Map Collection',org:'ArcGIS StoryMaps',desc:'Dam lake response map collection with satellite imagery and impact zones',tag:'GIS Map',url:'https://storymaps.arcgis.com/collections/54779cf3c8314073b1edb6115bc9a9a0'},
+    {icon:'🔌',name:'Water Level Open Data API',org:'Government Open Data Platform',desc:'Real-time water gauge API, updated every 10 minutes, ready for integration',tag:'Open API',url:'https://data.gov.tw/dataset/25768'},
+    {icon:'⛅',name:'Weather Open Data Platform',org:'Central Weather Administration',desc:'Free API for rainfall, temperature, typhoon tracks — apply for API key',tag:'Open API',url:'https://opendata.cwa.gov.tw/about/application'},
+  ],
+},
+vi: {
+  title:'🚦 Hệ Thống Giám Sát Thiên Tai Suối Mataaan',
+  subtitle:'Cảnh Báo Đèn Đường × Tuyến Thoát Hiểm × Báo Cáo An Toàn × Phân Tích AI × Thành Phần Phòng Chống Thiên Tai',
+  tabs:['👥 Quy Trình','🚦 Đèn Đường','🗺️ Thoát Hiểm','🆘 Báo Cáo','🤖 AI Ảnh','📊 Theo Dõi','🔗 Nguồn'],
+  bnav:['👥\nQuy trình','🚦\nĐèn','🗺️\nThoát','🆘\nBáo cáo','🤖\nAI','📊\nTheo dõi','🔗\nNguồn'],
+  flow_main_title:'🏠 Quy Trình Chính — Cư Dân Thông Thường (Cô Lin, 38 tuổi)',
+  flow_main_sub:'Tình huống sử dụng phổ biến nhất',
+  flow_main_tag:'Quy trình chính',
+  flow_steps:[
+    {num:'BƯỚC 01',icon:'📱',title:'Nhận Cảnh Báo LINE',desc:'LINE Bot gửi cấp độ cảnh báo và hướng dẫn sơ tán'},
+    {num:'BƯỚC 02',icon:'🗺️',title:'Xem Tuyến Thoát Hiểm',desc:'Mở bản đồ, hiển thị tuyến từ nhà đến nơi trú ẩn'},
+    {num:'BƯỚC 03',icon:'🔴',title:'Di Chuyển Theo Đèn',desc:'Đỏ nhấp nháy = nguy hiểm, xanh nhấp nháy = hướng an toàn'},
+    {num:'BƯỚC 04',icon:'🏫',title:'Đến Nơi Trú Ẩn',desc:'Quét mã QR hoặc báo cáo an toàn qua LINE Bot'},
+    {num:'BƯỚC 05',icon:'📸',title:'Báo Cáo Ảnh AI',desc:'Tải ảnh lên, AI tự động đánh giá loại rủi ro'},
+    {num:'BƯỚC 06',icon:'✅',title:'Đồng Bộ Trung Tâm',desc:'Hệ thống tổng hợp, cập nhật số lượng người tại nơi trú ẩn'},
+  ],
+  flow_exc_title:'⚠️ Tuyến Ngoại Lệ — Nhóm Đặc Biệt & Vai Trò',
+  flow_exc_sub:'≠ Nhãn chỉ sự khác biệt so với quy trình chính',
+  exc:[
+    {icon:'👴',name:'Ông Chen, 74 tuổi',role:'Người cao tuổi sống một mình tại Tapalong',pain:'Không dùng smartphone, nghe kém, đi lại khó khăn, con cái làm việc ở nơi khác.',steps:[
+      {t:'Đèn đường nhấp nháy đỏ',d:'Nhìn thấy nhấp nháy bất thường qua cửa sổ',tag:'≠ Không cần smartphone'},
+      {t:'Điện thoại tự động gọi (tiếng Đài)',d:'Hệ thống gọi điện thoại cố định, phát hướng dẫn sơ tán',tag:'≠ Điện thoại thay LINE'},
+      {t:'Bấm 1 cần trợ giúp → Cử tình nguyện viên',d:'Một nút để yêu cầu trợ giúp, hệ thống tự cử tình nguyện viên',tag:'≠ Cần sự giúp đỡ bên ngoài'},
+      {t:'Tình nguyện viên báo cáo thay',d:'Tình nguyện viên đánh dấu "đã đến nơi an toàn" trong hệ thống',tag:'Xác nhận an toàn'},
+    ],color:'245,158,11'},
+    {icon:'🦺',name:'Anh Wang, 29 tuổi',role:'Điều phối viên tình nguyện từ tỉnh khác',pain:'Không quen địa lý địa phương, không biết nơi nào cần giúp nhất.',steps:[
+      {t:'Đăng ký tài nguyên tình nguyện',d:'Báo cáo số người, vật tư, ETA qua LINE Bot',tag:'≠ Chủ động cung cấp tài nguyên'},
+      {t:'AI phân tích ghép cặp nhiệm vụ',d:'Hệ thống so sánh điểm nóng nhu cầu với tài nguyên',tag:'AI hỗ trợ quyết định'},
+      {t:'Thực hiện và báo cáo hoàn thành',d:'Check-in sau nhiệm vụ, bản đồ nhu cầu tự cập nhật',tag:'≠ Chế độ nhiệm vụ vòng lặp'},
+    ],color:'34,197,94'},
+  ],
+  official_name:'Cô Lin, 34 tuổi — Nhân viên Trung Tâm Ứng Phó Khẩn Cấp Huyện Hualien',
+  official_role:'Nhận thông tin từ nhiều nguồn với định dạng không nhất quán, khó ưu tiên nhanh.',
+  official_steps:[
+    {num:'01',icon:'📡',title:'Cảm Biến Kích Hoạt',desc:'Ngưỡng cảm biến vượt quá, hệ thống tạo đề xuất cảnh báo',tag:'Tự động'},
+    {num:'02',icon:'👤',title:'Xem Xét Thủ Công',desc:'Nhân viên xem bảng điều khiển và phê duyệt',tag:'≠ Cần phê duyệt thủ công'},
+    {num:'03',icon:'📢',title:'Phát Sóng Đa Kênh',desc:'Đèn, LINE, điện thoại, phát thanh đồng thời',tag:''},
+    {num:'04',icon:'📊',title:'Tổng Hợp Báo Cáo',desc:'Báo cáo cư dân liên tục đến',tag:''},
+    {num:'05',icon:'⚠️',title:'AI Phát Hiện Cảnh Báo',desc:'Tự động đánh dấu vùng không phản hồi',tag:'Phân tích AI'},
+    {num:'06',icon:'🔓',title:'Xác Nhận Giải Trừ',desc:'Phát tay, đèn về màu trắng',tag:'Hoàn thành'},
+  ],
+  cmp_title:'So Sánh Sự Khác Biệt Theo Persona',
+  cmp_heads:['Danh Mục','🏠 Cư Dân (Chính)','👴 Người Cao Tuổi','🦺 Điều Phối TN','🏛️ Trung Tâm UD'],
+  cmp_rows:[
+    ['Nhận Cảnh Báo','LINE Bot push','Điện thoại (tiếng Đài)','LINE Bot giao nhiệm vụ','Bảng điều khiển'],
+    ['Kích Hoạt Hành Động','Tự di chuyển','Bấm cần giúp, chờ TN','Nhận nhiệm vụ, xuất phát','Phê duyệt rồi phát hành'],
+    ['Vai Trò Đèn','Hướng dẫn sơ tán','Tín hiệu cảnh báo đầu tiên','Dẫn đến địa điểm nhiệm vụ','Điều khiển từ xa'],
+    ['Báo Cáo An Toàn','Tự báo qua LINE Bot','TN báo thay','Báo hoàn thành nhiệm vụ','Xem tỷ lệ phản hồi'],
+  ],
+  ctrl_standby:'Chờ', ctrl_no_alert:'Chưa có cảnh báo nào',
+  ctrl_levels_title:'Kiểm Soát Cấp Độ Cảnh Báo (Dựa Trên Sự Kiện Thực)',
+  ctrl_levels:[
+    {cls:'btn-monitor-l',emoji:'🔵',label:'Theo Dõi',date:'7/26',desc:'Hồ đập hình thành, đang theo dõi'},
+    {cls:'btn-yellow-l',emoji:'🟡',label:'Cảnh Báo Vàng',date:'8/12',desc:'Bão Yangliou, sơ tán dự phòng'},
+    {cls:'btn-red-l',emoji:'🔴',label:'Cảnh Báo Đỏ',date:'9/22',desc:'Cục Lâm nghiệp phát cảnh báo, sơ tán bắt buộc'},
+    {cls:'btn-breach-l',emoji:'🚨',label:'Vỡ Đập',date:'9/23',desc:'14:40 tràn đập — sơ tán khẩn cấp'},
+  ],
+  ctrl_clear:'✅ Giải Trừ Cảnh Báo',
+  ctrl_demo:'▶ Phát Demo Dòng Thời Gian',
+  ctrl_timeline_title:'Dòng Thời Gian Sự Kiện Thực',
+  ctrl_timeline:[
+    {date:'2025-07-26',label:'Hồ Đập Hình Thành',desc:'Sạt lở chặn suối Mataaan, xác nhận bằng vệ tinh',color:'#3b82f6'},
+    {date:'2025-08-12',label:'Lệnh Sơ Tán Đầu Tiên',desc:'Bão Yangliou, 7 thôn sơ tán dự phòng',color:'#f59e0b'},
+    {date:'2025-09-22',label:'Cảnh Báo Đỏ',desc:'Mực nước cách tràn 5,44m, 8.000 người sơ tán bắt buộc',color:'#ef4444'},
+    {date:'2025-09-23 14:40',label:'Vỡ Đập Tràn',desc:'Mưa lớn bão Huajia, lũ vào Guangfu, 19 người chết',color:'#ef4444'},
+  ],
+  ctrl_total:'Tổng Đèn', ctrl_alert:'Đang Cảnh Báo', ctrl_normal:'Bình Thường / Nơi Trú',
+  ctrl_lights_title:'Trạng Thái Đèn Thời Gian Thực ｜ 🔴Thượng Lưu 🟡Thị Trấn 🟢Nơi Trú Ẩn',
+  ctrl_logs_title:'Nhật Ký Thao Tác', ctrl_logs_empty:'Chưa có nhật ký',
+  ctrl_pending_title:'⏳ Yêu Cầu Đổi Đèn Chờ Xác Nhận', ctrl_pending_empty:'Không có mục nào chờ',
+  ctrl_approve:'✅ Phê Duyệt', ctrl_reject:'❌ Từ Chối',
+  ctrl_manual_title:'🔧 Điều Khiển Đèn Thủ Công',
+  ctrl_sel_light:'Chọn Đèn', ctrl_color:'Màu Sắc', ctrl_flash:'Chế Độ Nhấp Nháy',
+  ctrl_lights_opts:['Tất Cả Đèn','SL-001 Cổng Tapalong','SL-002 Đường 193 Km42','SL-003 Trước Văn Phòng Xã','SL-004 Cầu Mataaan','SL-005 Làng Guangrong (Nơi Trú)','SL-006 Làng Dama','SL-007 Làng Daping'],
+  ctrl_color_opts:['🔴 Đỏ (Khẩn Cấp)','🟡 Vàng (Cảnh Báo)','🔵 Xanh Dương (Theo Dõi)','🟢 Xanh Lá (Nơi Trú)','🤍 Trắng (Bình Thường)'],
+  ctrl_flash_opts:['Không Nhấp Nháy','Chậm (1,5 giây)','Nhanh (0,8 giây)','Khẩn Cấp (0,3 giây)'],
+  ctrl_apply:'🔧 Áp Dụng Ngay (Điều Khiển Thủ Công)',
+  zone_upstream:'Thượng Lưu', zone_downtown:'Thị Trấn', zone_shelter:'Nơi Trú Ẩn',
+  light_alert:'Cảnh Báo', light_normal:'Bình Thường', light_shelter:'Nơi Trú Ẩn',
+  esc_nearest_title:'🚨 Vị Trí Hiện Tại — Nơi Trú Ẩn Gần Nhất',
+  esc_locate_btn:'📍 Định Vị Ngay',
+  esc_locate_hint:'Nhấp "Định Vị Ngay" để tìm nơi trú ẩn được chính phủ chỉ định gần nhất.',
+  esc_preset_title:'⚙️ Cài Đặt Trước Tuyến Thoát Hiểm',
+  esc_home_tab:'🏠 Tuyến Từ Nhà', esc_work_tab:'🏢 Văn Phòng / Nơi Công Cộng',
+  esc_home_addr:'Địa Chỉ Nhà', esc_home_shelter:'Nơi Trú Ẩn Được Chỉ Định',
+  esc_shelter_opts:['Trường Tiểu Học Guangrong (Được chỉ định)','Trường THCS Guangfu','Trường Tiểu Học Tapalong'],
+  esc_alt_route:'Tuyến Dự Phòng (Tùy Chọn)',
+  esc_save_home:'💾 Lưu Tuyến Nhà',
+  esc_home_info_title:'📍 Tuyến Nhà Hiện Tại',
+  esc_home_info:'Điểm đầu: <strong style="color:#f0f4ff">Làng Dama, số 3</strong><br>Tuyến: Đi bộ về phía bắc theo Đường 9, ~800m<br>Điểm đến: <strong style="color:#86efac">Trường TH Guangrong</strong> (~12 phút)',
+  esc_light_hint:'⚠️ Hướng dẫn đèn: Xanh nhấp nháy = hướng an toàn, Đỏ nhấp nháy = nguy hiểm',
+  esc_nav:'🧭 Bắt Đầu Dẫn Đường', esc_ai_check:'🤖 AI Kiểm Tra Tuyến',
+  esc_ai_disclaimer:'⚠️ AI có thể mắc lỗi. Kết quả phân tích tuyến chỉ mang tính tham khảo.',
+  esc_work_addr:'Địa Chỉ Văn Phòng / Nơi Thường Đến', esc_work_mgr:'Đơn Vị Quản Lý', esc_work_exit:'Lối Thoát Được Chỉ Định',
+  esc_work_shelter:'Nơi Trú Ẩn Gần Nhất',
+  esc_work_shelter_opts:['Trường TH Guangrong (~8 phút đi bộ)','Trường THCS Guangfu (~12 phút đi bộ)'],
+  esc_save_work:'💾 Lưu Tuyến Công Sở',
+  esc_work_info_title:'🏢 Tuyến Công Sở / Công Cộng Hiện Tại',
+  esc_work_info:'Do <strong style="color:#ddd6fe">Văn Phòng Xã Guangfu</strong> lập kế hoạch<br>Lối thoát: <strong style="color:#f0f4ff">Cổng bắc chợ → Đường 9 hướng bắc</strong><br>Nơi trú gần nhất: <strong style="color:#86efac">Trường TH Guangrong (~8 phút)</strong>',
+  rpt_title:'🆘 Báo Cáo An Toàn Cá Nhân',
+  rpt_step1:'Bước 1 | Tình Trạng Hiện Tại',
+  rpt_btn_safe:'✅ Tôi an toàn', rpt_btn_injured:'🤕 Tôi bị thương', rpt_btn_trapped:'🆘 Tôi bị mắc kẹt', rpt_btn_proxy:'👥 Báo thay người khác',
+  rpt_step2:'Bước 2 | Chi Tiết',
+  rpt_name:'Họ Tên', rpt_name_hint:'(Tùy chọn, ẩn danh được)',
+  rpt_location:'Vị Trí Hiện Tại (địa chỉ hoặc GPS)',
+  rpt_gps:'📍 Định Vị GPS',
+  rpt_gps_coords:'📡 Tọa Độ GPS (đã tự điền)',
+  rpt_triage:'Đánh Giá Sơ Cứu',
+  rpt_c1:'① Ý Thức', rpt_c2:'② Vết Thương', rpt_c3:'③ Khả Năng Di Chuyển', rpt_c4:'④ Hô Hấp',
+  rpt_c1_opts:['Chọn','Tỉnh táo, trả lời bình thường','Tỉnh táo nhưng lẫn lộn','Phản ứng với kích thích, không trả lời được','Không phản ứng (có thể bất tỉnh)'],
+  rpt_c2_opts:['Chọn','Không có vết thương rõ ràng','Trầy xước nhẹ (đã cầm máu)','Chảy máu không kiểm soát','Nghi ngờ gãy xương','Chấn thương đầu/cột sống (không di chuyển)','Bị kẹp/đè'],
+  rpt_c3_opts:['Chọn','Có thể tự đi','Cần hỗ trợ để đi','Không thể di chuyển, cần cáng/xe lăn','Hoàn toàn không thể di chuyển'],
+  rpt_c4_opts:['Chọn','Thở bình thường','Thở khó/nhanh','Không thở (cần CPR ngay)'],
+  rpt_people:'Số Người (bao gồm bạn)',
+  rpt_help:'Cần Hỗ Trợ Gì? (Chọn nhiều)',
+  rpt_help_opts:['Vận Chuyển','Y Tế / Sơ Cứu','Thức Ăn & Nước','Hỗ Trợ Di Chuyển (xe lăn/cáng)','Chăm Sóc Trẻ Em','Hỗ Trợ Người Cao Tuổi'],
+  rpt_help_vals:['transport','medical','food','mobility','child','senior'],
+  rpt_note:'Ghi Chú Thêm (Tùy Chọn)',
+  rpt_submit:'📡 Gửi Báo Cáo',
+  rpt_log_title:'Báo Cáo Đã Gửi', rpt_log_empty:'Chưa có báo cáo nào',
+  rpt_map_title:'📍 Bản Đồ Báo Cáo Cư Dân',
+  rpt_map_desc:'Báo cáo được <strong style="color:#b0bedd">Trung Tâm Tình Báo</strong> xem xét trước khi hiển thị.',
+  rpt_map_badge:'Hiển thị sau khi xem xét',
+  rpt_map_legend:['An Toàn','Bị Thương','Bị Kẹt','Báo Thay'],
+  rpt_map_note:'⚠️ Điểm đánh dấu chỉ để demo. Thực tế chỉ hiển thị sau khi xem xét thủ công.',
+  rpt_status_labels:{safe:'✅ An Toàn',injured:'🤕 Bị Thương',trapped:'🆘 Bị Kẹt',proxy:'👥 Báo Thay'},
+  triage_immediate:'🔴 Ngay Lập Tức — Cần cứu hộ khẩn cấp',
+  triage_delayed:'🟡 Trì Hoãn — Cần hỗ trợ y tế',
+  triage_minor:'🟢 Nhẹ — Có thể tự di chuyển',
+  triage_unknown:'⚠️ Đang Đánh Giá (cần thêm thông tin)',
+  ai_title:'🤖 Phân Tích Ảnh AI — Báo Cáo Nâng Cao',
+  ai_desc:'Tải ảnh lên để Claude Vision tự động đánh giá độ sâu lũ, loại sạt lở.',
+  ai_upload_title:'Nhấp hoặc kéo thả ảnh (tùy chọn)',
+  ai_upload_hint:'Tải ảnh để AI đánh giá, hoặc nhập thủ công',
+  ai_analyze:'🔍 AI Phân Tích Ảnh',
+  ai_remove:'✕',
+  ai_analyzing:'Claude Vision đang phân tích...',
+  ai_loc_title:'📍 Địa Điểm Báo Cáo',
+  ai_loc_addr:'Địa Chỉ (nhập thủ công)',
+  ai_gps:'📍 Định Vị GPS',
+  ai_gps_coords:'📡 Tọa Độ GPS',
+  ai_hazard_title:'🚨 Thông Tin Thiên Tai (nhập thủ công hoặc AI tự điền)',
+  ai_hazard_type:'Loại Thiên Tai',
+  ai_hazard_opts:['Chọn hoặc để AI xác định','Ngập Lụt','Sạt Lở / Lũ Quét','Đường Bị Hỏng','Nhà Bị Hư','Cầu Bị Hỏng','Cột Điện Đổ','Không Có Thiên Tai Rõ Ràng'],
+  ai_hazard_vals:['','積水','坍方','道路損毀','建物受損','橋樑損毀','電線桿倒塌','無明顯災害'],
+  ai_severity:'Mức Độ Nghiêm Trọng',
+  ai_severity_opts:['Chọn hoặc để AI xác định','Thấp (nhẹ, có thể đi qua)','Trung Bình (cẩn thận)','Cao (nguy hiểm, tránh)','Cực Cao (nghiêm trọng, cấm đi)'],
+  ai_severity_vals:['','low','medium','high','critical'],
+  ai_note:'Ghi Chú Thêm (Tùy Chọn)',
+  ai_result_title:'📋 Kết Quả Phân Tích AI',
+  ai_result_hint:'(Có thể chỉnh sửa trước khi gửi)',
+  ai_mark_map:'📍 Đánh Dấu Trên Bản Đồ',
+  ai_copy_json:'📋 Sao Chép JSON',
+  ai_manual_submit:'📡 Gửi Báo Cáo Thủ Công (Không Cần AI)',
+  ai_disclaimer_title:'AI có thể mắc lỗi. Vui lòng kiểm tra cẩn thận.',
+  ai_disclaimer_body:'Tính năng này sử dụng AI để phân tích hình ảnh. Kết quả chỉ mang tính tham khảo. Luôn tham khảo thông báo chính thức của chính phủ và nhân viên tại chỗ.',
+  mon_water_title:'Xu Hướng Mực Nước Suối Mataaan (Dữ Liệu Mô Phỏng — Chỉ Để Demo)',
+  mon_water_link:'→ Mực Nước Thời Gian Thực',
+  mon_water_note:'⚠️ Dữ liệu mô phỏng cho mục đích demo.',
+  mon_water_link2:'Xem dữ liệu thực →',
+  mon_rain_title:'Xu Hướng Lượng Mưa Guangfu (Dữ Liệu Mô Phỏng)',
+  mon_rain_link:'→ Lượng Mưa Thời Gian Thực',
+  mon_rain_note:'⚠️ Dữ liệu mô phỏng.',
+  mon_rain_link2:'Xem dữ liệu thực →',
+  mon_ncdr_title:'Theo Dõi Hồ Đập Mataaan NCDR',
+  mon_ncdr_note:'Nếu trang không tải được: ',
+  mon_ncdr_link:'Mở trực tiếp →',
+  src_title:'Nguồn Thông Tin & Theo Dõi Liên Quan',
+  src_items:[
+    {icon:'🗺️',name:'Theo Dõi Hồ Đập NCDR',org:'Trung Tâm Khoa Học Giảm Thiểu Thiên Tai Quốc Gia',desc:'Bản đồ theo dõi thời gian thực với mực nước, lượng mưa, ảnh vệ tinh',tag:'Thời gian thực',url:'https://watch.ncdr.nat.gov.tw/watch_barrier_map_v2'},
+    {icon:'💧',name:'Mực Nước Thời Gian Thực',org:'Cơ Quan Tài Nguyên Nước',desc:'Dữ liệu mực nước sông lớn, cập nhật mỗi 10 phút',tag:'Mỗi 10 phút',url:'https://fhy.wra.gov.tw/fhyv2/monitor/water'},
+    {icon:'🌧️',name:'Lượng Mưa Thời Gian Thực',org:'Cơ Quan Tài Nguyên Nước',desc:'Lượng mưa tích lũy từ tất cả các trạm đo mưa',tag:'Thời gian thực',url:'https://fhy.wra.gov.tw/fhyv2/monitor/rain'},
+    {icon:'📹',name:'Camera CCTV Thời Gian Thực',org:'Cơ Quan Tài Nguyên Nước',desc:'Cảnh quay trực tiếp tại Cầu Mataaan và các điểm quan trọng',tag:'Video Thực',url:'https://fhy.wra.gov.tw/fhyv2/monitor/cctvTable'},
+    {icon:'🏛️',name:'Khu Thông Tin Hồ Đập',org:'Chính Quyền Huyện Hualien',desc:'Khu thông tin chính thức với tin tức, thông tin sơ tán, nơi trú ẩn',tag:'Chính Thức',url:'https://www.hl.gov.tw/ysh/'},
+    {icon:'🌲',name:'Hệ Thống Theo Dõi Lâm Nghiệp',org:'Cơ Quan Lâm Nghiệp và Bảo Tồn Thiên Nhiên',desc:'Theo dõi thiên tai rừng và hồ đập với hình ảnh thời gian thực',tag:'Thời gian thực',url:'https://www.iiicloud.com.tw/FarmlandQlakenew/BarrierLake'},
+    {icon:'🗂️',name:'Bộ Bản Đồ GIS Thiên Tai',org:'ArcGIS StoryMaps',desc:'Bộ bản đồ ứng phó với ảnh vệ tinh và vùng ảnh hưởng',tag:'Bản Đồ GIS',url:'https://storymaps.arcgis.com/collections/54779cf3c8314073b1edb6115bc9a9a0'},
+    {icon:'🔌',name:'API Mực Nước Dữ Liệu Mở',org:'Nền Tảng Dữ Liệu Mở Chính Phủ',desc:'API đo mực nước thời gian thực, cập nhật mỗi 10 phút',tag:'API Mở',url:'https://data.gov.tw/dataset/25768'},
+    {icon:'⛅',name:'Nền Tảng Dữ Liệu Thời Tiết Mở',org:'Cơ Quan Khí Tượng Trung Ương',desc:'API miễn phí cho lượng mưa, nhiệt độ, đường đi bão',tag:'API Mở',url:'https://opendata.cwa.gov.tw/about/application'},
+  ],
+},
+ja: {
+  title:'🚦 マタアン渓流防災統合監視システム',
+  subtitle:'街灯警報 × 避難経路 × 安否報告 × AI画像解析 × モジュール式防災部品',
+  tabs:['👥 ユーザーフロー','🚦 街灯制御','🗺️ 避難経路','🆘 安否報告','🤖 AI画像','📊 モニター','🔗 情報源'],
+  bnav:['👥\nフロー','🚦\n街灯','🗺️\n避難','🆘\n報告','🤖\nAI','📊\nモニター','🔗\n情報源'],
+  flow_main_title:'🏠 メインフロー — 一般住民（林さん、38歳、大馬村）',
+  flow_main_sub:'最も一般的な使用シナリオ',
+  flow_main_tag:'メインフロー',
+  flow_steps:[
+    {num:'STEP 01',icon:'📱',title:'LINE警報受信',desc:'LINE Botが警戒レベルと避難指示を送信'},
+    {num:'STEP 02',icon:'🗺️',title:'避難経路確認',desc:'地図を開き、自宅→避難所の設定経路を表示'},
+    {num:'STEP 03',icon:'🔴',title:'街灯に従い避難',desc:'赤点滅=危険、緑点滅=安全な避難方向'},
+    {num:'STEP 04',icon:'🏫',title:'避難所到着',desc:'QRコードをスキャンまたはLINE Botで安全報告'},
+    {num:'STEP 05',icon:'📸',title:'AI画像報告',desc:'写真をアップロード、AIがリスクタイプを自動判定'},
+    {num:'STEP 06',icon:'✅',title:'センターへデータ同期',desc:'システムが集計し、避難者数と需要マップを更新'},
+  ],
+  flow_exc_title:'⚠️ 例外パス — 特別なグループと役割',
+  flow_exc_sub:'≠ タグはメインフローとの違いを示します',
+  exc:[
+    {icon:'👴',name:'陳さん、74歳',role:'タパロン村の一人暮らし高齢者',pain:'スマートフォンなし、難聴、移動困難、子供は他県で働いている。',steps:[
+      {t:'街灯が赤く点滅',d:'窓から異常な点滅を発見',tag:'≠ スマートフォン不要'},
+      {t:'自動電話（台湾語）',d:'システムが固定電話に電話し避難指示を再生',tag:'≠ 電話がLINEの代わり'},
+      {t:'1を押して助けを呼ぶ→ボランティア派遣',d:'ワンボタンで助けを求め、システムが自動派遣',tag:'≠ 第三者の助けが必要'},
+      {t:'ボランティアが代わりに報告',d:'ボランティアがシステムに「安全到着」を記録',tag:'安全確認'},
+    ],color:'245,158,11'},
+    {icon:'🦺',name:'王さん、29歳',role:'他県からのボランティアコーディネーター',pain:'地元の地理に不慣れ、どこが最も支援を必要としているか不明。',steps:[
+      {t:'ボランティアリソース登録',d:'LINE Botで人数、物資、到着予定時刻を報告',tag:'≠ 能動的にリソース提供'},
+      {t:'AIタスクマッチング',d:'システムがニーズホットスポットとリソースを照合',tag:'AI支援決定'},
+      {t:'実行して完了報告',d:'タスク後にチェックイン、需要マップが自動更新',tag:'≠ 循環タスクモード'},
+    ],color:'34,197,94'},
+  ],
+  official_name:'林さん、34歳 — 花蓮県緊急対応センター当直員',
+  official_role:'複数のソースから一貫性のない形式で情報を受け取り、優先順位が難しい。',
+  official_steps:[
+    {num:'01',icon:'📡',title:'センサーアラート',desc:'センサー閾値超過、システムが警報を提案',tag:'自動トリガー'},
+    {num:'02',icon:'👤',title:'手動レビュー',desc:'担当者がダッシュボードを確認して承認',tag:'≠ 人間の承認が必要'},
+    {num:'03',icon:'📢',title:'多チャンネル同時配信',desc:'街灯、LINE、電話、放送が同時に',tag:''},
+    {num:'04',icon:'📊',title:'リアルタイム報告集計',desc:'住民の報告が継続的に入ってくる',tag:''},
+    {num:'05',icon:'⚠️',title:'AIアラート検出',desc:'未応答ゾーンを自動でフラグ',tag:'AI分析'},
+    {num:'06',icon:'🔓',title:'解除確認',desc:'手動で解除、街灯が白色に戻る',tag:'タスク完了'},
+  ],
+  cmp_title:'ペルソナ別の主な違い',
+  cmp_heads:['カテゴリ','🏠 一般住民（主）','👴 高齢者','🦺 ボランティアコーディ','🏛️ 対応センター'],
+  cmp_rows:[
+    ['警報受信','LINE Botプッシュ','音声電話（台湾語）','LINE Botタスク割当','システムダッシュボード'],
+    ['行動トリガー','自主避難','助けを求めてボランティア待機','タスク受信後出発','承認後発令'],
+    ['街灯の役割','避難方向のガイド','最初の警告信号','タスク場所への誘導','遠隔制御と確認'],
+    ['安全報告','LINE Botで自己報告','ボランティアが代わりに報告','タスク完了報告','全区域応答率確認'],
+  ],
+  ctrl_standby:'スタンバイ', ctrl_no_alert:'警報なし',
+  ctrl_levels_title:'警戒レベル制御（実際の事件に基づく）',
+  ctrl_levels:[
+    {cls:'btn-monitor-l',emoji:'🔵',label:'監視中',date:'7/26',desc:'堰き止め湖形成、監視継続'},
+    {cls:'btn-yellow-l',emoji:'🟡',label:'黄色警戒',date:'8/12',desc:'台風ヤンリュウ、予防的避難'},
+    {cls:'btn-red-l',emoji:'🔴',label:'赤色警戒',date:'9/22',desc:'林業局が警戒発令、強制避難'},
+    {cls:'btn-breach-l',emoji:'🚨',label:'決壊越流',date:'9/23',desc:'14:40 越流 — 直ちに避難'},
+  ],
+  ctrl_clear:'✅ 警報解除',
+  ctrl_demo:'▶ タイムラインデモ再生',
+  ctrl_timeline_title:'実際のイベントタイムライン',
+  ctrl_timeline:[
+    {date:'2025-07-26',label:'堰き止め湖形成',desc:'土砂崩れがマタアン川をせき止め、衛星で確認',color:'#3b82f6'},
+    {date:'2025-08-12',label:'初回避難令',desc:'台風ヤンリュウ、7村落が予防的避難',color:'#f59e0b'},
+    {date:'2025-09-22',label:'赤色警戒',desc:'水位が越流口まで5.44m、8,000人が強制避難',color:'#ef4444'},
+    {date:'2025-09-23 14:40',label:'決壊越流',desc:'台風ホアジャ豪雨、洪水が光復郷に流入、19人死亡',color:'#ef4444'},
+  ],
+  ctrl_total:'街灯総数', ctrl_alert:'警戒中', ctrl_normal:'正常 / 避難所',
+  ctrl_lights_title:'リアルタイム街灯状態 ｜ 🔴上流域 🟡市街地 🟢避難所',
+  ctrl_logs_title:'操作ログ', ctrl_logs_empty:'ログなし',
+  ctrl_pending_title:'⏳ 承認待ち街灯変更リクエスト', ctrl_pending_empty:'保留中なし',
+  ctrl_approve:'✅ 承認', ctrl_reject:'❌ 拒否',
+  ctrl_manual_title:'🔧 手動街灯制御',
+  ctrl_sel_light:'街灯選択', ctrl_color:'色', ctrl_flash:'点滅モード',
+  ctrl_lights_opts:['全街灯','SL-001 タパロン入口','SL-002 193号線42km','SL-003 光復郷公所前','SL-004 マタアン橋','SL-005 光栄村（避難所）','SL-006 大馬村','SL-007 大平村'],
+  ctrl_color_opts:['🔴 赤（緊急）','🟡 黄（警戒）','🔵 青（監視）','🟢 緑（避難所）','🤍 白（通常）'],
+  ctrl_flash_opts:['点滅なし','低速点滅（1.5秒）','高速点滅（0.8秒）','緊急点滅（0.3秒）'],
+  ctrl_apply:'🔧 今すぐ適用（手動制御）',
+  zone_upstream:'上流域', zone_downtown:'市街地', zone_shelter:'避難所',
+  light_alert:'警戒中', light_normal:'正常', light_shelter:'避難所',
+  esc_nearest_title:'🚨 現在地 — 最寄り避難所',
+  esc_locate_btn:'📍 今すぐ位置確認',
+  esc_locate_hint:'「今すぐ位置確認」をタップして最寄りの政府指定避難所を自動検索。',
+  esc_preset_title:'⚙️ 避難経路の事前設定',
+  esc_home_tab:'🏠 自宅からの経路', esc_work_tab:'🏢 職場 / 公共施設',
+  esc_home_addr:'自宅住所', esc_home_shelter:'指定避難所',
+  esc_shelter_opts:['光栄小学校（光復郷公所指定）','光復中学校','タパロン小学校'],
+  esc_alt_route:'代替経路（任意）',
+  esc_save_home:'💾 自宅経路を保存',
+  esc_home_info_title:'📍 現在の自宅経路',
+  esc_home_info:'出発地: <strong style="color:#f0f4ff">大馬村3号</strong><br>経路: 9号線沿いに北へ徒歩約800m<br>目的地: <strong style="color:#86efac">光栄小学校</strong>（約12分）',
+  esc_light_hint:'⚠️ 街灯ガイド: 緑点滅=安全な方向、赤点滅=危険・進入禁止',
+  esc_nav:'🧭 ナビ開始', esc_ai_check:'🤖 AI経路確認',
+  esc_ai_disclaimer:'⚠️ AIは誤りを犯す可能性があります。経路分析は参考情報です。必ず公式情報を確認してください。',
+  esc_work_addr:'職場 / よく行く場所の住所', esc_work_mgr:'管理組織', esc_work_exit:'指定避難口',
+  esc_work_shelter:'最寄り避難所',
+  esc_work_shelter_opts:['光栄小学校（徒歩約8分）','光復中学校（徒歩約12分）'],
+  esc_save_work:'💾 職場経路を保存',
+  esc_work_info_title:'🏢 現在の職場/公共経路',
+  esc_work_info:'<strong style="color:#ddd6fe">光復郷公所</strong>が計画<br>避難口: <strong style="color:#f0f4ff">市場北口 → 9号線北行</strong><br>最寄り避難所: <strong style="color:#86efac">光栄小学校（約8分）</strong>',
+  rpt_title:'🆘 個人安否報告',
+  rpt_step1:'ステップ1 | 現在の状況',
+  rpt_btn_safe:'✅ 安全です', rpt_btn_injured:'🤕 負傷しています', rpt_btn_trapped:'🆘 閉じ込められています', rpt_btn_proxy:'👥 他の人を代わりに報告',
+  rpt_step2:'ステップ2 | 詳細情報',
+  rpt_name:'氏名', rpt_name_hint:'（任意、匿名可）',
+  rpt_location:'現在地（住所またはGPS）',
+  rpt_gps:'📍 GPS位置情報',
+  rpt_gps_coords:'📡 GPS座標（自動入力済み）',
+  rpt_triage:'応急処置評価',
+  rpt_c1:'① 意識状態', rpt_c2:'② 外傷の有無', rpt_c3:'③ 移動能力', rpt_c4:'④ 呼吸状態',
+  rpt_c1_opts:['選択','意識清明、正常に会話できる','意識あり、混乱している','刺激に反応するが会話不可','無反応（意識消失の可能性）'],
+  rpt_c2_opts:['選択','外傷なし','軽微な擦り傷（止血済み）','出血が止まらない','骨折の疑い','頭部・脊椎損傷（動かさないで）','挟まれ・圧迫'],
+  rpt_c3_opts:['選択','自力で歩行可能','支えが必要','担架・車椅子が必要','完全に動けない（脊椎・骨折の疑い）'],
+  rpt_c4_opts:['選択','正常な呼吸','呼吸困難・急速','呼吸なし（即CPR必要）'],
+  rpt_people:'同行者数（本人含む）',
+  rpt_help:'必要な支援（複数選択可）',
+  rpt_help_opts:['輸送支援','医療・救急','食料・水','移動補助（車椅子・担架）','乳幼児ケア','高齢者支援'],
+  rpt_help_vals:['transport','medical','food','mobility','child','senior'],
+  rpt_note:'補足事項（任意）',
+  rpt_submit:'📡 報告を送信',
+  rpt_log_title:'送信済み報告', rpt_log_empty:'まだ報告はありません',
+  rpt_map_title:'📍 住民報告マップ',
+  rpt_map_desc:'報告は<strong style="color:#b0bedd">情報センター</strong>で審査後にマップに表示されます。',
+  rpt_map_badge:'審査後に表示',
+  rpt_map_legend:['安全','負傷','閉じ込め','代理報告'],
+  rpt_map_note:'⚠️ マップの標示はデモ用です。実際の運用では手動審査後のみ更新されます。',
+  rpt_status_labels:{safe:'✅ 安全',injured:'🤕 負傷',trapped:'🆘 閉じ込め',proxy:'👥 代理報告'},
+  triage_immediate:'🔴 即時（Immediate）— 緊急救助が必要',
+  triage_delayed:'🟡 遅延（Delayed）— 医療支援が必要',
+  triage_minor:'🟢 軽傷（Minor）— 自力移動可能',
+  triage_unknown:'⚠️ 評価中（情報不足）',
+  ai_title:'🤖 AI画像解析 — 強化された報告',
+  ai_desc:'現場写真をアップロードするとClaude Visionが浸水深や土砂崩れの種類を自動判定し、構造化リスクデータ（JSON）を出力します。',
+  ai_upload_title:'クリックまたはドラッグで写真をアップロード（任意）',
+  ai_upload_hint:'写真をアップロードしてAIに状況を判定させるか、写真なしで手動入力も可能',
+  ai_analyze:'🔍 AI自動画像解析',
+  ai_remove:'✕',
+  ai_analyzing:'Claude Visionが解析中です。お待ちください...',
+  ai_loc_title:'📍 報告場所',
+  ai_loc_addr:'住所（手動入力）',
+  ai_gps:'📍 GPS位置情報',
+  ai_gps_coords:'📡 GPS座標',
+  ai_hazard_title:'🚨 災害情報（手動入力またはAI自動入力）',
+  ai_hazard_type:'災害の種類',
+  ai_hazard_opts:['選択またはAIに判定させる','浸水','土砂崩れ / 土石流','道路損傷','建物損傷','橋梁損傷','電柱倒壊','明らかな災害なし'],
+  ai_hazard_vals:['','積水','坍方','道路損毀','建物受損','橋樑損毀','電線桿倒塌','無明顯災害'],
+  ai_severity:'深刻度',
+  ai_severity_opts:['選択またはAIに判定させる','低（軽微、通行可能）','中（注意、慎重に通行）','高（危険、回避推奨）','極高（深刻、通行禁止）'],
+  ai_severity_vals:['','low','medium','high','critical'],
+  ai_note:'補足事項（任意）',
+  ai_result_title:'📋 AI解析結果',
+  ai_result_hint:'（送信前に上のフィールドで編集可能）',
+  ai_mark_map:'📍 防災マップに標示',
+  ai_copy_json:'📋 JSONをコピー',
+  ai_manual_submit:'📡 手動報告を送信（AI不要）',
+  ai_disclaimer_title:'AIは誤りを犯す可能性があります。慎重に確認してご使用ください。',
+  ai_disclaimer_body:'この機能はAIが画像を解析します。結果は参考情報であり、公式の災害認定ではありません。政府機関の発表や現場専門家の判断に従ってください。',
+  mon_water_title:'マタアン川水位トレンド（模擬データ・デモのみ）',
+  mon_water_link:'→ WRAリアルタイム水位',
+  mon_water_note:'⚠️ デモ用の模擬データです。',
+  mon_water_link2:'ライブデータを見る →',
+  mon_rain_title:'光復降水量トレンド（模擬データ）',
+  mon_rain_link:'→ WRAリアルタイム降水量',
+  mon_rain_note:'⚠️ 模擬データ。',
+  mon_rain_link2:'ライブデータを見る →',
+  mon_ncdr_title:'NCDRマタアン堰き止め湖監視',
+  mon_ncdr_note:'ページが読み込めない場合: ',
+  mon_ncdr_link:'直接開く →',
+  src_title:'関連モニタリング・情報源',
+  src_items:[
+    {icon:'🗺️',name:'NCDR堰き止め湖監視',org:'国家科学技術防災センター',desc:'水位、降水量、衛星画像を含むリアルタイム監視マップ',tag:'ライブ',url:'https://watch.ncdr.nat.gov.tw/watch_barrier_map_v2'},
+    {icon:'💧',name:'リアルタイム水位',org:'水利署',desc:'主要河川の水位データ、10分ごと更新',tag:'10分更新',url:'https://fhy.wra.gov.tw/fhyv2/monitor/water'},
+    {icon:'🌧️',name:'リアルタイム降水量',org:'水利署',desc:'全国雨量計からの累積降水量',tag:'ライブ',url:'https://fhy.wra.gov.tw/fhyv2/monitor/rain'},
+    {icon:'📹',name:'ライブCCTV映像',org:'水利署',desc:'マタアン橋等の重要監視ポイントのライブ映像',tag:'ライブ映像',url:'https://fhy.wra.gov.tw/fhyv2/monitor/cctvTable'},
+    {icon:'🏛️',name:'堰き止め湖情報ゾーン',org:'花蓮県政府',desc:'最新情報、避難情報、避難所位置を含む公式情報ゾーン',tag:'公式',url:'https://www.hl.gov.tw/ysh/'},
+    {icon:'🌲',name:'林業署監視システム',org:'林業及自然保育署',desc:'国有林防災応援および堰き止め湖監視、ライブ映像付き',tag:'ライブ',url:'https://www.iiicloud.com.tw/FarmlandQlakenew/BarrierLake'},
+    {icon:'🗂️',name:'災害GIS地図コレクション',org:'ArcGIS StoryMaps',desc:'衛星画像と影響範囲を含む応援地図コレクション',tag:'GIS地図',url:'https://storymaps.arcgis.com/collections/54779cf3c8314073b1edb6115bc9a9a0'},
+    {icon:'🔌',name:'水位オープンデータAPI',org:'政府オープンデータプラットフォーム',desc:'リアルタイム水位API、10分ごと更新、統合可能',tag:'オープンAPI',url:'https://data.gov.tw/dataset/25768'},
+    {icon:'⛅',name:'気象オープンデータプラットフォーム',org:'中央気象署',desc:'降水量、気温、台風進路の無料API',tag:'オープンAPI',url:'https://opendata.cwa.gov.tw/about/application'},
+  ],
+},
+ko: {
+  title:'🚦 마타안 강 재난 통합 모니터링 시스템',
+  subtitle:'가로등 경보 × 대피 경로 × 안전 신고 × AI 이미지 분석 × 모듈형 방재 부품',
+  tabs:['👥 사용자 흐름','🚦 가로등 제어','🗺️ 대피 경로','🆘 안전 신고','🤖 AI 이미지','📊 모니터링','🔗 정보 출처'],
+  bnav:['👥\n흐름','🚦\n가로등','🗺️\n대피','🆘\n신고','🤖\nAI','📊\n모니터','🔗\n출처'],
+  flow_main_title:'🏠 메인 흐름 — 일반 주민 (린 씨, 38세, 다마 마을)',
+  flow_main_sub:'가장 일반적인 사용 시나리오',
+  flow_main_tag:'메인 흐름',
+  flow_steps:[
+    {num:'STEP 01',icon:'📱',title:'LINE 경보 수신',desc:'LINE Bot이 경보 수준 및 대피 지시 전송'},
+    {num:'STEP 02',icon:'🗺️',title:'대피 경로 확인',desc:'지도 열기, 사전 설정된 집→대피소 경로 표시'},
+    {num:'STEP 03',icon:'🔴',title:'가로등 따라 대피',desc:'빨간 점멸=위험, 초록 점멸=안전 방향'},
+    {num:'STEP 04',icon:'🏫',title:'대피소 도착',desc:'QR 코드 스캔 또는 LINE Bot으로 안전 신고'},
+    {num:'STEP 05',icon:'📸',title:'AI 이미지 신고',desc:'사진 업로드, AI가 위험 유형 자동 판단'},
+    {num:'STEP 06',icon:'✅',title:'센터 데이터 동기화',desc:'시스템 집계, 대피소 인원 및 수요 지도 업데이트'},
+  ],
+  flow_exc_title:'⚠️ 예외 경로 — 특별 집단 및 역할',
+  flow_exc_sub:'≠ 태그는 메인 흐름과의 차이를 나타냅니다',
+  exc:[
+    {icon:'👴',name:'진 씨, 74세',role:'타파롱 마을 독거 노인',pain:'스마트폰 없음, 청력 저하, 이동 어려움, 자녀는 타 지역 근무.',steps:[
+      {t:'가로등 빨간 점멸',d:'창문에서 이상한 점멸 발견',tag:'≠ 스마트폰 불필요'},
+      {t:'자동 전화 (대만어)',d:'시스템이 유선 전화로 전화해 대피 안내 재생',tag:'≠ 전화가 LINE 대체'},
+      {t:'1번 눌러 도움 요청→봉사자 파견',d:'한 번 누르면 도움 요청, 시스템이 자동 파견',tag:'≠ 제3자 도움 필요'},
+      {t:'봉사자가 대신 신고',d:'봉사자가 시스템에 "안전 도착" 표시',tag:'안전 확인'},
+    ],color:'245,158,11'},
+    {icon:'🦺',name:'왕 씨, 29세',role:'다른 지역에서 온 봉사자 코디네이터',pain:'지역 지리에 낯설고, 어디가 가장 도움이 필요한지 모름.',steps:[
+      {t:'봉사자 자원 등록',d:'LINE Bot으로 인원, 물자, 도착 예정 시간 신고',tag:'≠ 능동적으로 자원 제공'},
+      {t:'AI 작업 매칭',d:'시스템이 수요 핫스팟과 자원을 대조',tag:'AI 지원 결정'},
+      {t:'수행 및 완료 보고',d:'작업 후 체크인, 수요 지도 자동 업데이트',tag:'≠ 순환 작업 모드'},
+    ],color:'34,197,94'},
+  ],
+  official_name:'린 씨, 34세 — 화롄현 긴급 대응 센터 당직 직원',
+  official_role:'여러 소스에서 일관성 없는 형식으로 정보를 받아 우선순위 지정이 어려움.',
+  official_steps:[
+    {num:'01',icon:'📡',title:'센서 경보 트리거',desc:'센서 임계값 초과, 시스템이 경보 제안 생성',tag:'자동 트리거'},
+    {num:'02',icon:'👤',title:'수동 검토',desc:'담당자가 대시보드 확인 후 승인',tag:'≠ 인간 승인 필요'},
+    {num:'03',icon:'📢',title:'다채널 동시 방송',desc:'가로등, LINE, 전화, 방송 동시 발령',tag:''},
+    {num:'04',icon:'📊',title:'실시간 신고 집계',desc:'주민 신고가 계속 들어옴',tag:''},
+    {num:'05',icon:'⚠️',title:'AI 경보 탐지',desc:'미응답 구역 자동 표시',tag:'AI 분석'},
+    {num:'06',icon:'🔓',title:'해제 확인',desc:'수동으로 해제, 가로등 흰색으로 복귀',tag:'작업 완료'},
+  ],
+  cmp_title:'페르소나별 주요 차이점',
+  cmp_heads:['항목','🏠 일반 주민 (주)','👴 독거 노인','🦺 봉사자 코디','🏛️ 대응 센터'],
+  cmp_rows:[
+    ['경보 수신','LINE Bot 푸시','음성 전화 (대만어)','LINE Bot 작업 할당','시스템 대시보드'],
+    ['행동 트리거','자주적으로 대피','도움 요청 후 봉사자 대기','작업 수신 후 출발','승인 후 발령'],
+    ['가로등 역할','대피 방향 안내','첫 번째 경고 신호','작업 위치로 안내','원격 제어 및 확인'],
+    ['안전 신고','LINE Bot으로 자기 신고','봉사자가 대신 신고','작업 완료 신고','전 구역 응답률 확인'],
+  ],
+  ctrl_standby:'대기 중', ctrl_no_alert:'경보 없음',
+  ctrl_levels_title:'경보 단계 제어 (실제 사건 기반)',
+  ctrl_levels:[
+    {cls:'btn-monitor-l',emoji:'🔵',label:'모니터링',date:'7/26',desc:'댐 호수 형성, 모니터링 중'},
+    {cls:'btn-yellow-l',emoji:'🟡',label:'황색 경보',date:'8/12',desc:'태풍 양류, 예방적 대피'},
+    {cls:'btn-red-l',emoji:'🔴',label:'적색 경보',date:'9/22',desc:'임업청 경보 발령, 강제 대피'},
+    {cls:'btn-breach-l',emoji:'🚨',label:'댐 범람',date:'9/23',desc:'14:40 범람 — 즉시 대피'},
+  ],
+  ctrl_clear:'✅ 경보 해제',
+  ctrl_demo:'▶ 전체 타임라인 데모 재생',
+  ctrl_timeline_title:'실제 이벤트 타임라인',
+  ctrl_timeline:[
+    {date:'2025-07-26',label:'댐 호수 형성',desc:'산사태가 마타안 강 막음, 위성으로 확인',color:'#3b82f6'},
+    {date:'2025-08-12',label:'첫 번째 대피령',desc:'태풍 양류, 7개 마을 예방적 대피',color:'#f59e0b'},
+    {date:'2025-09-22',label:'적색 경보',desc:'수위 월류구에서 5.44m, 8,000명 강제 대피',color:'#ef4444'},
+    {date:'2025-09-23 14:40',label:'댐 범람',desc:'태풍 화자 폭우, 홍수 광푸향 유입, 19명 사망',color:'#ef4444'},
+  ],
+  ctrl_total:'가로등 총수', ctrl_alert:'경보 중', ctrl_normal:'정상 / 대피소',
+  ctrl_lights_title:'실시간 가로등 상태 ｜ 🔴상류 🟡시내 🟢대피소',
+  ctrl_logs_title:'작업 기록', ctrl_logs_empty:'기록 없음',
+  ctrl_pending_title:'⏳ 확인 대기 중인 가로등 변경 요청', ctrl_pending_empty:'대기 중인 항목 없음',
+  ctrl_approve:'✅ 승인', ctrl_reject:'❌ 거부',
+  ctrl_manual_title:'🔧 수동 가로등 제어',
+  ctrl_sel_light:'가로등 선택', ctrl_color:'색상', ctrl_flash:'점멸 모드',
+  ctrl_lights_opts:['전체 가로등','SL-001 타파롱 입구','SL-002 193번 도로 42km','SL-003 광푸 마을사무소 앞','SL-004 마타안 다리','SL-005 광룽 마을 (대피소)','SL-006 다마 마을','SL-007 다핑 마을'],
+  ctrl_color_opts:['🔴 빨간색 (긴급)','🟡 노란색 (경보)','🔵 파란색 (모니터링)','🟢 초록색 (대피소)','🤍 흰색 (정상)'],
+  ctrl_flash_opts:['점멸 없음','저속 점멸 (1.5초)','고속 점멸 (0.8초)','긴급 점멸 (0.3초)'],
+  ctrl_apply:'🔧 지금 적용 (수동 제어)',
+  zone_upstream:'상류', zone_downtown:'시내', zone_shelter:'대피소',
+  light_alert:'경보 중', light_normal:'정상', light_shelter:'대피소',
+  esc_nearest_title:'🚨 현재 위치 — 가장 가까운 대피소',
+  esc_locate_btn:'📍 지금 위치 확인',
+  esc_locate_hint:'「지금 위치 확인」을 눌러 가장 가까운 정부 지정 대피소를 자동 검색.',
+  esc_preset_title:'⚙️ 대피 경로 사전 설정',
+  esc_home_tab:'🏠 집에서의 경로', esc_work_tab:'🏢 직장 / 공공장소',
+  esc_home_addr:'집 주소', esc_home_shelter:'지정 대피소',
+  esc_shelter_opts:['광룽 초등학교 (광푸 마을 지정)','광푸 중학교','타파롱 초등학교'],
+  esc_alt_route:'대체 경로 (선택사항)',
+  esc_save_home:'💾 집 경로 저장',
+  esc_home_info_title:'📍 현재 집 경로',
+  esc_home_info:'출발지: <strong style="color:#f0f4ff">다마 마을 3번</strong><br>경로: 9번 도로 따라 북쪽으로 도보 약 800m<br>목적지: <strong style="color:#86efac">광룽 초등학교</strong> (약 12분)',
+  esc_light_hint:'⚠️ 가로등 안내: 초록 점멸=안전 방향, 빨간 점멸=위험·진입 금지',
+  esc_nav:'🧭 내비게이션 시작', esc_ai_check:'🤖 AI 경로 확인',
+  esc_ai_disclaimer:'⚠️ AI는 오류를 범할 수 있습니다. 경로 분석은 참고용입니다. 반드시 공식 정보를 확인하세요.',
+  esc_work_addr:'직장 / 자주 가는 곳 주소', esc_work_mgr:'관리 기관', esc_work_exit:'지정 탈출구',
+  esc_work_shelter:'가장 가까운 대피소',
+  esc_work_shelter_opts:['광룽 초등학교 (도보 약 8분)','광푸 중학교 (도보 약 12분)'],
+  esc_save_work:'💾 직장 경로 저장',
+  esc_work_info_title:'🏢 현재 직장/공공 경로',
+  esc_work_info:'<strong style="color:#ddd6fe">광푸 마을사무소</strong> 계획<br>탈출구: <strong style="color:#f0f4ff">시장 북쪽 출구 → 9번 도로 북쪽</strong><br>가장 가까운 대피소: <strong style="color:#86efac">광룽 초등학교 (약 8분)</strong>',
+  rpt_title:'🆘 개인 안전 신고',
+  rpt_step1:'1단계 | 현재 상태',
+  rpt_btn_safe:'✅ 안전합니다', rpt_btn_injured:'🤕 부상을 입었습니다', rpt_btn_trapped:'🆘 갇혀 있습니다', rpt_btn_proxy:'👥 다른 사람 대신 신고',
+  rpt_step2:'2단계 | 상세 정보',
+  rpt_name:'이름', rpt_name_hint:'(선택사항, 익명 가능)',
+  rpt_location:'현재 위치 (주소 또는 GPS)',
+  rpt_gps:'📍 GPS 위치',
+  rpt_gps_coords:'📡 GPS 좌표 (자동 입력됨)',
+  rpt_triage:'응급 처치 평가',
+  rpt_c1:'① 의식 상태', rpt_c2:'② 외상 여부', rpt_c3:'③ 이동 가능 여부', rpt_c4:'④ 호흡 상태',
+  rpt_c1_opts:['선택','명료하게 대화 가능','의식은 있으나 혼란','자극에 반응하나 대화 불가','무반응 (의식 상실 가능성)'],
+  rpt_c2_opts:['선택','외상 없음','가벼운 찰과상 (지혈됨)','지혈 안 되는 출혈','골절 의심','두부/척추 부상 (움직이지 말것)','끼임/압박'],
+  rpt_c3_opts:['선택','혼자 걸을 수 있음','부축이 필요함','들것/휠체어 필요','완전히 움직이지 못함'],
+  rpt_c4_opts:['선택','정상 호흡','힘든/빠른 호흡','호흡 없음 (즉시 CPR 필요)'],
+  rpt_people:'동행 인원 (본인 포함)',
+  rpt_help:'필요한 도움 (복수 선택 가능)',
+  rpt_help_opts:['교통 지원','의료 / 응급처치','식량 및 음료수','이동 보조 (휠체어/들것)','영유아 돌봄','노인 지원'],
+  rpt_help_vals:['transport','medical','food','mobility','child','senior'],
+  rpt_note:'추가 설명 (선택사항)',
+  rpt_submit:'📡 신고 제출',
+  rpt_log_title:'제출된 신고 기록', rpt_log_empty:'아직 신고가 없습니다',
+  rpt_map_title:'📍 주민 신고 지도',
+  rpt_map_desc:'신고는 <strong style="color:#b0bedd">정보센터</strong> 검토 후 지도에 표시됩니다.',
+  rpt_map_badge:'검토 후 표시',
+  rpt_map_legend:['안전','부상','갇힘','대리 신고'],
+  rpt_map_note:'⚠️ 지도의 표시는 데모용입니다. 실제 운영에서는 수동 검토 후에만 업데이트됩니다.',
+  rpt_status_labels:{safe:'✅ 안전',injured:'🤕 부상',trapped:'🆘 갇힘',proxy:'👥 대리 신고'},
+  triage_immediate:'🔴 즉시 (Immediate) — 긴급 구조 필요',
+  triage_delayed:'🟡 지연 (Delayed) — 의료 지원 필요',
+  triage_minor:'🟢 경상 (Minor) — 혼자 이동 가능',
+  triage_unknown:'⚠️ 평가 중 (정보 부족)',
+  ai_title:'🤖 AI 이미지 분석 — 강화된 신고',
+  ai_desc:'현장 사진을 업로드하면 Claude Vision이 침수 깊이와 산사태 유형을 자동 판단합니다.',
+  ai_upload_title:'클릭하거나 드래그하여 사진 업로드 (선택사항)',
+  ai_upload_hint:'업로드하면 AI가 상황을 판단하거나, 사진 없이 수동 입력도 가능',
+  ai_analyze:'🔍 AI 자동 이미지 분석',
+  ai_remove:'✕',
+  ai_analyzing:'Claude Vision 분석 중입니다...',
+  ai_loc_title:'📍 신고 위치',
+  ai_loc_addr:'주소 (수동 입력)',
+  ai_gps:'📍 GPS 위치',
+  ai_gps_coords:'📡 GPS 좌표',
+  ai_hazard_title:'🚨 재난 정보 (수동 입력 또는 AI 자동 입력)',
+  ai_hazard_type:'재난 유형',
+  ai_hazard_opts:['선택 또는 AI에게 맡기기','침수','산사태 / 토석류','도로 손상','건물 손상','교량 손상','전신주 쓰러짐','명확한 재난 없음'],
+  ai_hazard_vals:['','積水','坍方','道路損毀','建物受損','橋樑損毀','電線桿倒塌','無明顯災害'],
+  ai_severity:'심각도 수준',
+  ai_severity_opts:['선택 또는 AI에게 맡기기','낮음 (경미, 통행 가능)','중간 (주의, 신중하게 통행)','높음 (위험, 피하기 권장)','매우 높음 (심각, 진입 금지)'],
+  ai_severity_vals:['','low','medium','high','critical'],
+  ai_note:'추가 설명 (선택사항)',
+  ai_result_title:'📋 AI 분석 결과',
+  ai_result_hint:'(제출 전 위 필드에서 편집 가능)',
+  ai_mark_map:'📍 재난 지도에 표시',
+  ai_copy_json:'📋 JSON 복사',
+  ai_manual_submit:'📡 수동 신고 제출 (AI 불필요)',
+  ai_disclaimer_title:'AI는 오류를 범할 수 있습니다. 신중하게 확인 후 사용하세요.',
+  ai_disclaimer_body:'이 기능은 AI가 이미지를 분석합니다. 결과는 참고용이며 공식 재난 인정이 아닙니다. 정부 기관의 공고와 현장 전문가의 판단을 따르십시오.',
+  mon_water_title:'마타안 강 수위 추세 (시뮬레이션 데이터 — 데모 전용)',
+  mon_water_link:'→ WRA 실시간 수위',
+  mon_water_note:'⚠️ 데모용 시뮬레이션 데이터입니다.',
+  mon_water_link2:'실시간 데이터 보기 →',
+  mon_rain_title:'광푸 강수량 추세 (시뮬레이션 데이터)',
+  mon_rain_link:'→ WRA 실시간 강수량',
+  mon_rain_note:'⚠️ 시뮬레이션 데이터.',
+  mon_rain_link2:'실시간 데이터 보기 →',
+  mon_ncdr_title:'NCDR 마타안 댐 호수 모니터링',
+  mon_ncdr_note:'페이지가 로드되지 않으면: ',
+  mon_ncdr_link:'직접 열기 →',
+  src_title:'관련 모니터링 및 정보 출처',
+  src_items:[
+    {icon:'🗺️',name:'NCDR 댐 호수 모니터링',org:'국가과학기술재난감소센터',desc:'수위, 강수량, 위성 이미지를 포함한 실시간 모니터링 지도',tag:'실시간',url:'https://watch.ncdr.nat.gov.tw/watch_barrier_map_v2'},
+    {icon:'💧',name:'실시간 수위',org:'수자원청',desc:'주요 하천 수위 데이터, 10분마다 업데이트',tag:'10분 업데이트',url:'https://fhy.wra.gov.tw/fhyv2/monitor/water'},
+    {icon:'🌧️',name:'실시간 강수량',org:'수자원청',desc:'전국 우량계의 누적 강수량',tag:'실시간',url:'https://fhy.wra.gov.tw/fhyv2/monitor/rain'},
+    {icon:'📹',name:'라이브 CCTV 영상',org:'수자원청',desc:'마타안 다리 등 주요 모니터링 지점의 라이브 영상',tag:'라이브 영상',url:'https://fhy.wra.gov.tw/fhyv2/monitor/cctvTable'},
+    {icon:'🏛️',name:'댐 호수 정보 구역',org:'화롄현 정부',desc:'최신 뉴스, 대피 정보, 대피소 위치를 포함한 공식 정보 구역',tag:'공식',url:'https://www.hl.gov.tw/ysh/'},
+    {icon:'🌲',name:'임업청 모니터링 시스템',org:'임업및자연보전청',desc:'산림 재난 대응 및 댐 호수 모니터링, 라이브 영상 포함',tag:'실시간',url:'https://www.iiicloud.com.tw/FarmlandQlakenew/BarrierLake'},
+    {icon:'🗂️',name:'재난 GIS 지도 모음',org:'ArcGIS StoryMaps',desc:'위성 이미지와 영향 범위를 포함한 재난 지도 모음',tag:'GIS 지도',url:'https://storymaps.arcgis.com/collections/54779cf3c8314073b1edb6115bc9a9a0'},
+    {icon:'🔌',name:'수위 오픈 데이터 API',org:'정부 오픈 데이터 플랫폼',desc:'실시간 수위 API, 10분마다 업데이트, 통합 가능',tag:'오픈 API',url:'https://data.gov.tw/dataset/25768'},
+    {icon:'⛅',name:'기상 오픈 데이터 플랫폼',org:'중앙기상청',desc:'강수량, 기온, 태풍 경로의 무료 API',tag:'오픈 API',url:'https://opendata.cwa.gov.tw/about/application'},
+  ],
+},
+};
+
+
+// ══════════════════════════════════════════════════════
+// 狀態與渲染引擎（從舊版移植）
+// ══════════════════════════════════════════════════════
+let currentLang = 'zh';
+const TAB_KEYS = ['flow','control','escape','report','ai','monitor','sources'];
+const MOCK_LIGHTS = {
+  'SL-001':{name_key:'SL-001',zone:'upstream',status:'normal',color:'white',flash:false,flash_speed:null},
+  'SL-002':{name_key:'SL-002',zone:'upstream',status:'normal',color:'white',flash:false,flash_speed:null},
+  'SL-003':{name_key:'SL-003',zone:'downtown',status:'normal',color:'white',flash:false,flash_speed:null},
+  'SL-004':{name_key:'SL-004',zone:'upstream',status:'normal',color:'white',flash:false,flash_speed:null},
+  'SL-005':{name_key:'SL-005',zone:'shelter',status:'normal',color:'white',flash:false,flash_speed:null},
+  'SL-006':{name_key:'SL-006',zone:'upstream',status:'normal',color:'white',flash:false,flash_speed:null},
+  'SL-007':{name_key:'SL-007',zone:'upstream',status:'normal',color:'white',flash:false,flash_speed:null},
+};
+const MOCK_LOGS=[], PENDING_CONFIRMS=[], REPORT_LOG=[];
+const COLOR_ICON={white:'🤍',blue:'🔵',amber:'🟡',red:'🔴',green:'🟢'};
+let selectedStatus=null, userCoords=null, aiCoords=null;
+let escapeMaps={}, mapsInited={}, shelterMapInst=null, reportMapInst=null, aiMapInst=null;
+let chartsInited=false;
+const SHELTERS=[{name:'光榮國小',lat:23.6478,lng:121.4267},{name:'光復國中',lat:23.6501,lng:121.4290},{name:'太巴塱國小',lat:23.6432,lng:121.4231}];
+
+function T(){ return LANGS[currentLang]; }
+
+// ── 渲染導覽列 ────────────────────────────────────────
+function renderNav(){
+  const t=T();
+  document.getElementById('hdr-title').textContent=t.title;
+  document.getElementById('hdr-sub').textContent=t.subtitle;
+  document.getElementById('page-title').textContent=t.title;
+  document.documentElement.lang={zh:'zh-TW',en:'en',vi:'vi',ja:'ja',ko:'ko'}[currentLang]||'zh-TW';
+
+  const topTabs=document.getElementById('top-tabs');
+  topTabs.innerHTML=TAB_KEYS.map((k,i)=>
+    `<button class="tab ${i===0&&currentLang===currentLang?'':''}${document.getElementById('page-'+k).classList.contains('active')?'active':''}" onclick="switchTab('${k}')">${t.tabs[i]}</button>`
+  ).join('');
+
+  const bnav=document.getElementById('bottom-nav');
+  bnav.innerHTML=TAB_KEYS.map((k,i)=>{
+    const parts=t.bnav[i].split('\n');
+    return `<button class="bnav-btn ${document.getElementById('page-'+k).classList.contains('active')?'active':''}" onclick="switchTab('${k}')"><span class="bnav-icon">${parts[0]}</span>${parts[1]||''}</button>`;
+  }).join('');
+}
+
+// ── Tab 切換 ──────────────────────────────────────────
+function switchTab(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  renderNav();
+  renderPage(name);
+  if(name==='monitor'&&!chartsInited) setTimeout(initCharts,100);
+  if(name==='escape'&&!mapsInited['home']) setTimeout(initEscapeMaps,150);
+  else if(name==='escape') setTimeout(()=>{Object.values(escapeMaps).forEach(m=>m?.invalidateSize());},100);
+  if(name==='report') setTimeout(()=>{initReportMap();if(reportMapInst)reportMapInst.invalidateSize();},150);
+}
+
+// ── 各頁面渲染函式 ────────────────────────────────────
+function renderPage(name){
+  switch(name){
+    case 'flow': renderFlow(); break;
+    case 'control': renderControl(); break;
+    case 'escape': renderEscape(); break;
+    case 'report': renderReport(); break;
+    case 'ai': renderAI(); break;
+    case 'monitor': renderMonitor(); break;
+    case 'sources': renderSources(); break;
+  }
+}
+
+function renderFlow(){
+  const t=T();
+  document.getElementById('page-flow').innerHTML=`
   <div class="card">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-      <div><div style="font-size:14px;font-weight:700;color:#f0f4ff">🏠 主流程 — 一般居民（林小姐，38歲，光復鄉大馬村）</div>
-      <div style="font-size:12px;color:#9daacc;margin-top:2px">最常見的使用情境</div></div>
-      <span class="tag tag-system">主流程</span>
+      <div><div style="font-size:14px;font-weight:700;color:#f0f4ff">${t.flow_main_title}</div>
+      <div style="font-size:12px;color:#9daacc;margin-top:2px">${t.flow_main_sub}</div></div>
+      <span class="tag tag-system">${t.flow_main_tag}</span>
     </div>
     <div class="flow-row">
-      <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div class="fbox"><div class="fnum">STEP 01</div><span class="ficon">📱</span><div class="ftitle">收到 LINE 警報</div><div class="fdesc">LINE Bot 推送警戒等級與疏散指令</div></div></div>
-      <div class="farrow"><div class="farrow-line"></div><div class="farrow-head"></div></div>
-      <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div class="fbox"><div class="fnum">STEP 02</div><span class="ficon">🗺️</span><div class="ftitle">查看逃生路徑</div><div class="fdesc">開啟地圖，顯示預設家→收容所路線</div></div></div>
-      <div class="farrow"><div class="farrow-line"></div><div class="farrow-head"></div></div>
-      <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div class="fbox"><div class="fnum">STEP 03</div><span class="ficon">🔴</span><div class="ftitle">沿路燈疏散</div><div class="fdesc">危險區閃紅，收容所方向閃綠，跟燈走</div></div></div>
-      <div class="farrow"><div class="farrow-line"></div><div class="farrow-head"></div></div>
-      <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div class="fbox"><div class="fnum">STEP 04</div><span class="ficon">🏫</span><div class="ftitle">抵達收容所</div><div class="fdesc">掃描 QR Code 或在 LINE Bot 回報安全</div></div></div>
-      <div class="farrow"><div class="farrow-line"></div><div class="farrow-head"></div></div>
-      <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div class="fbox"><div class="fnum">STEP 05</div><span class="ficon">📸</span><div class="ftitle">AI 影像回報</div><div class="fdesc">上傳現場照片，AI 自動判斷風險類型</div></div></div>
-      <div class="farrow"><div class="farrow-line"></div><div class="farrow-head"></div></div>
-      <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div class="fbox"><div class="fnum">STEP 06</div><span class="ficon">✅</span><div class="ftitle">資料同步中心</div><div class="fdesc">系統彙整，更新收容人數與需求地圖</div></div></div>
+      ${t.flow_steps.map(s=>`
+      <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0">
+        <div class="fbox"><div class="fnum">${s.num}</div><span class="ficon">${s.icon}</span><div class="ftitle">${s.title}</div><div class="fdesc">${s.desc}</div></div>
+      </div>
+      <div class="farrow" style="margin-top:36px;flex-shrink:0;padding:0 2px"><div class="farrow-line"></div><div class="farrow-head"></div></div>
+      `).join('').replace(/<div class="farrow"[^>]*>.*?<\/div><\/div>\s*$/s,'')}
     </div>
   </div>
 
-  <!-- 例外路徑 -->
   <div style="font-size:12px;font-weight:700;color:#b0bedd;padding:9px 13px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:12px;display:flex;align-items:center;gap:8px">
-    ⚠️ 例外路徑 — 特殊族群與角色
-    <span style="font-size:11px;color:#9daacc;font-weight:400;margin-left:auto">≠ 標籤代表與主流程的差異</span>
+    ${t.flow_exc_title}<span style="font-size:11px;color:#9daacc;font-weight:400;margin-left:auto">${t.flow_exc_sub}</span>
   </div>
 
   <div class="exc-grid">
-    <!-- 獨居老人 -->
-    <div class="card" style="border-color:rgba(245,158,11,.25)">
+    ${t.exc.map(e=>`
+    <div class="card" style="border-color:rgba(${e.color},.25)">
       <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px">
-        <div style="width:36px;height:36px;border-radius:50%;background:rgba(245,158,11,.2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">👴</div>
-        <div><div style="font-size:13px;font-weight:700;color:#f0f4ff">陳阿公，74歲</div><div style="font-size:10px;color:#9daacc">太巴塱村獨居老人</div></div>
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(${e.color},.2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">${e.icon}</div>
+        <div><div style="font-size:13px;font-weight:700;color:#f0f4ff">${e.name}</div><div style="font-size:10px;color:#9daacc">${e.role}</div></div>
       </div>
-      <div style="font-size:11px;color:#b0bedd;background:rgba(255,255,255,.04);border-radius:7px;padding:7px 9px;margin-bottom:10px;line-height:1.5">不用智慧型手機、聽力退化、行動不便，子女在外縣市。</div>
-      <div class="exc-step"><div class="exc-dot" style="background:rgba(245,158,11,.2);color:#fde68a">1</div><div><div class="exc-stitle">路燈閃紅光</div><div class="exc-sdesc">從窗戶看到異常閃爍</div><span class="tag tag-diff" style="margin-top:3px">≠ 不靠手機</span></div></div>
-      <div class="exc-step"><div class="exc-dot" style="background:rgba(245,158,11,.2);color:#fde68a">2</div><div><div class="exc-stitle">語音電話（台語）</div><div class="exc-sdesc">自動撥打家用電話播報疏散指令</div><span class="tag tag-diff" style="margin-top:3px">≠ 電話取代LINE</span></div></div>
-      <div class="exc-step"><div class="exc-dot" style="background:rgba(245,158,11,.2);color:#fde68a">3</div><div><div class="exc-stitle">按1求助 → 派志工</div><div class="exc-sdesc">一鍵完成求助，系統自動指派志工到府</div><span class="tag tag-diff" style="margin-top:3px">≠ 需第三方協助</span></div></div>
-      <div class="exc-step"><div class="exc-dot" style="background:rgba(245,158,11,.2);color:#fde68a">4</div><div><div class="exc-stitle">志工代為回報</div><div class="exc-sdesc">到府後由志工在系統標記已安全抵達</div><span class="tag tag-safe" style="margin-top:3px">安全確認</span></div></div>
-    </div>
-
-    <!-- 志工協調員 -->
-    <div class="card" style="border-color:rgba(34,197,94,.25)">
-      <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px">
-        <div style="width:36px;height:36px;border-radius:50%;background:rgba(34,197,94,.2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🦺</div>
-        <div><div style="font-size:13px;font-weight:700;color:#f0f4ff">王大偉，29歲</div><div style="font-size:10px;color:#9daacc">外縣市志工協調員</div></div>
-      </div>
-      <div style="font-size:11px;color:#b0bedd;background:rgba(255,255,255,.04);border-radius:7px;padding:7px 9px;margin-bottom:10px;line-height:1.5">不熟當地地理，不知道哪裡最需要幫助，資源無法精準對接。</div>
-      <div class="exc-step"><div class="exc-dot" style="background:rgba(34,197,94,.2);color:#86efac">1</div><div><div class="exc-stitle">登記志工資源</div><div class="exc-sdesc">LINE Bot 回報人數、物資、預計抵達時間</div><span class="tag tag-diff" style="margin-top:3px">≠ 主動提供資源</span></div></div>
-      <div class="exc-step"><div class="exc-dot" style="background:rgba(34,197,94,.2);color:#86efac">2</div><div><div class="exc-stitle">AI 媒合分析任務</div><div class="exc-sdesc">系統比對需求熱點與資源，產生建議任務</div><span class="tag tag-system" style="margin-top:3px">AI 輔助決策</span></div></div>
-      <div class="exc-step"><div class="exc-dot" style="background:rgba(34,197,94,.2);color:#86efac">3</div><div><div class="exc-stitle">執行並回報完成</div><div class="exc-sdesc">任務完成後打卡，需求地圖自動更新</div><span class="tag tag-diff" style="margin-top:3px">≠ 循環任務模式</span></div></div>
-    </div>
+      <div style="font-size:11px;color:#b0bedd;background:rgba(255,255,255,.04);border-radius:7px;padding:7px 9px;margin-bottom:10px;line-height:1.5">${e.pain}</div>
+      ${e.steps.map(s=>`
+      <div class="exc-step">
+        <div class="exc-dot" style="background:rgba(${e.color},.2);color:rgb(${e.color.split(',').map((v,i)=>i===0?Math.min(255,parseInt(v)+80):parseInt(v)+30)})">•</div>
+        <div><div class="exc-stitle">${s.t}</div><div class="exc-sdesc">${s.d}</div>
+        <span class="tag ${s.tag.startsWith('≠')?'tag-diff':'tag-safe'}" style="margin-top:3px">${s.tag}</span></div>
+      </div>`).join('')}
+    </div>`).join('')}
   </div>
 
-  <!-- 應變中心（全寬） -->
   <div class="card" style="border-color:rgba(139,92,246,.25)">
     <div style="display:flex;align-items:center;gap:9px;margin-bottom:12px">
       <div style="width:36px;height:36px;border-radius:50%;background:rgba(139,92,246,.2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🏛️</div>
-      <div><div style="font-size:13px;font-weight:700;color:#f0f4ff">林佳慧，34歲 — 花蓮縣府應變中心值班人員</div>
-      <div style="font-size:11px;color:#9daacc">同時收到多方資訊、格式不一，無法快速判斷哪裡最危急。</div></div>
+      <div><div style="font-size:13px;font-weight:700;color:#f0f4ff">${t.official_name}</div>
+      <div style="font-size:11px;color:#9daacc">${t.official_role}</div></div>
     </div>
     <div style="overflow-x:auto;padding-bottom:4px">
       <div style="display:flex;gap:5px;min-width:max-content">
-        <div style="width:118px;padding:10px 8px;border-radius:8px;text-align:center;border:1px solid rgba(139,92,246,.25);background:rgba(139,92,246,.07)"><div style="font-size:9px;font-weight:700;color:#a78bfa;margin-bottom:2px">01</div><div style="font-size:16px;margin-bottom:3px">📡</div><div style="font-size:11px;font-weight:700;color:#f0f4ff;margin-bottom:2px">監測警戒觸發</div><div style="font-size:10px;color:#9daacc">感測器超過閾值自動建議</div><span class="tag tag-system" style="margin-top:4px">自動觸發</span></div>
-        <div style="display:flex;align-items:center;flex-shrink:0"><div style="width:14px;height:2px;background:#8b5cf6"></div><div style="width:0;height:0;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:6px solid #8b5cf6"></div></div>
-        <div style="width:118px;padding:10px 8px;border-radius:8px;text-align:center;border:1px solid rgba(139,92,246,.25);background:rgba(139,92,246,.07)"><div style="font-size:9px;font-weight:700;color:#a78bfa;margin-bottom:2px">02</div><div style="font-size:16px;margin-bottom:3px">👤</div><div style="font-size:11px;font-weight:700;color:#f0f4ff;margin-bottom:2px">人工審核確認</div><div style="font-size:10px;color:#9daacc">值班人員查看後核准</div><span class="tag tag-diff" style="margin-top:4px">≠ 需人工確認</span></div>
-        <div style="display:flex;align-items:center;flex-shrink:0"><div style="width:14px;height:2px;background:#8b5cf6"></div><div style="width:0;height:0;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:6px solid #8b5cf6"></div></div>
-        <div style="width:118px;padding:10px 8px;border-radius:8px;text-align:center;border:1px solid rgba(139,92,246,.25);background:rgba(139,92,246,.07)"><div style="font-size:9px;font-weight:700;color:#a78bfa;margin-bottom:2px">03</div><div style="font-size:16px;margin-bottom:3px">📢</div><div style="font-size:11px;font-weight:700;color:#f0f4ff;margin-bottom:2px">多管道同步發布</div><div style="font-size:10px;color:#9daacc">路燈、LINE、電話、廣播</div></div>
-        <div style="display:flex;align-items:center;flex-shrink:0"><div style="width:14px;height:2px;background:#8b5cf6"></div><div style="width:0;height:0;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:6px solid #8b5cf6"></div></div>
-        <div style="width:118px;padding:10px 8px;border-radius:8px;text-align:center;border:1px solid rgba(139,92,246,.25);background:rgba(139,92,246,.07)"><div style="font-size:9px;font-weight:700;color:#a78bfa;margin-bottom:2px">04</div><div style="font-size:16px;margin-bottom:3px">📊</div><div style="font-size:11px;font-weight:700;color:#f0f4ff;margin-bottom:2px">即時回報彙整</div><div style="font-size:10px;color:#9daacc">民眾回報持續進入</div></div>
-        <div style="display:flex;align-items:center;flex-shrink:0"><div style="width:14px;height:2px;background:#8b5cf6"></div><div style="width:0;height:0;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:6px solid #8b5cf6"></div></div>
-        <div style="width:118px;padding:10px 8px;border-radius:8px;text-align:center;border:1px solid rgba(139,92,246,.25);background:rgba(139,92,246,.07)"><div style="font-size:9px;font-weight:700;color:#a78bfa;margin-bottom:2px">05</div><div style="font-size:16px;margin-bottom:3px">⚠️</div><div style="font-size:11px;font-weight:700;color:#f0f4ff;margin-bottom:2px">AI 警示偵測</div><div style="font-size:10px;color:#9daacc">自動標示未回應區域</div><span class="tag tag-system" style="margin-top:4px">AI分析</span></div>
-        <div style="display:flex;align-items:center;flex-shrink:0"><div style="width:14px;height:2px;background:#8b5cf6"></div><div style="width:0;height:0;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:6px solid #8b5cf6"></div></div>
-        <div style="width:118px;padding:10px 8px;border-radius:8px;text-align:center;border:1px solid rgba(139,92,246,.25);background:rgba(139,92,246,.07)"><div style="font-size:9px;font-weight:700;color:#a78bfa;margin-bottom:2px">06</div><div style="font-size:16px;margin-bottom:3px">🔓</div><div style="font-size:11px;font-weight:700;color:#f0f4ff;margin-bottom:2px">警報解除確認</div><div style="font-size:10px;color:#9daacc">手動發布，路燈恢復白色</div><span class="tag tag-safe" style="margin-top:4px">任務結束</span></div>
+        ${t.official_steps.map((s,i)=>`
+        <div style="width:118px;padding:10px 8px;border-radius:8px;text-align:center;border:1px solid rgba(139,92,246,.25);background:rgba(139,92,246,.07)">
+          <div style="font-size:9px;font-weight:700;color:#a78bfa;margin-bottom:2px">${s.num}</div>
+          <div style="font-size:16px;margin-bottom:3px">${s.icon}</div>
+          <div style="font-size:11px;font-weight:700;color:#f0f4ff;margin-bottom:2px">${s.title}</div>
+          <div style="font-size:10px;color:#9daacc">${s.desc}</div>
+          ${s.tag?`<span class="tag ${s.tag.startsWith('≠')?'tag-diff':'tag-system'}" style="margin-top:4px">${s.tag}</span>`:''}
+        </div>
+        ${i<t.official_steps.length-1?'<div style="display:flex;align-items:center;flex-shrink:0"><div style="width:14px;height:2px;background:#8b5cf6"></div><div style="width:0;height:0;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:6px solid #8b5cf6"></div></div>':''}
+        `).join('')}
       </div>
     </div>
   </div>
 
-  <!-- 對照表 -->
   <div class="card">
-    <div class="card-title">各 Persona 關鍵差異對照</div>
+    <div class="card-title">${t.cmp_title}</div>
     <div style="overflow-x:auto">
       <table style="width:100%;border-collapse:collapse;font-size:12px">
-        <thead><tr>
-          <th style="background:#1e2a3a;color:#b0bedd;font-size:10px;font-weight:700;text-transform:uppercase;padding:9px 10px;text-align:left;border-bottom:1px solid var(--border)">比較項目</th>
-          <th style="background:#1e2a3a;color:#93c5fd;font-size:10px;font-weight:700;padding:9px 10px;text-align:left;border-bottom:1px solid var(--border)">🏠 一般居民（主）</th>
-          <th style="background:#1e2a3a;color:#fde68a;font-size:10px;font-weight:700;padding:9px 10px;text-align:left;border-bottom:1px solid var(--border)">👴 獨居老人</th>
-          <th style="background:#1e2a3a;color:#86efac;font-size:10px;font-weight:700;padding:9px 10px;text-align:left;border-bottom:1px solid var(--border)">🦺 志工協調員</th>
-          <th style="background:#1e2a3a;color:#ddd6fe;font-size:10px;font-weight:700;padding:9px 10px;text-align:left;border-bottom:1px solid var(--border)">🏛️ 應變中心</th>
-        </tr></thead>
-        <tbody>
-          <tr><td style="padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#f0f4ff;font-weight:600">接收警報</td><td style="padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#93c5fd">LINE Bot 推播</td><td style="padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#fde68a">語音電話（台語）</td><td style="padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#86efac">LINE Bot 任務指派</td><td style="padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#ddd6fe">系統儀表板警示</td></tr>
-          <tr><td style="padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#f0f4ff;font-weight:600">行動觸發</td><td style="padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#93c5fd">自主查看路徑後疏散</td><td style="padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#fde68a">按鍵求助，等待志工</td><td style="padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#86efac">接收任務後主動出發</td><td style="padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#ddd6fe">審核後核准發布</td></tr>
-          <tr><td style="padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#f0f4ff;font-weight:600">路燈作用</td><td style="padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#93c5fd">指引疏散方向</td><td style="padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#fde68a">第一個警示訊號</td><td style="padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#86efac">引導前往任務地點</td><td style="padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#ddd6fe">遠端控制與確認</td></tr>
-          <tr><td style="padding:9px 10px;color:#f0f4ff;font-weight:600">回報安全</td><td style="padding:9px 10px;color:#93c5fd">自行在 LINE Bot 回報</td><td style="padding:9px 10px;color:#fde68a">由志工代為回報</td><td style="padding:9px 10px;color:#86efac">回報任務完成</td><td style="padding:9px 10px;color:#ddd6fe">查看全區回應率</td></tr>
-        </tbody>
+        <thead><tr>${t.cmp_heads.map((h,i)=>`<th style="background:#1e2a3a;color:${['#b0bedd','#93c5fd','#fde68a','#86efac','#ddd6fe'][i]};font-size:10px;font-weight:700;padding:9px 10px;text-align:left;border-bottom:1px solid var(--border)">${h}</th>`).join('')}</tr></thead>
+        <tbody>${t.cmp_rows.map(r=>`<tr>${r.map((c,i)=>`<td style="padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:${i===0?'#f0f4ff':'#b0bedd'};${i===0?'font-weight:600':''}">${c}</td>`).join('')}</tr>`).join('')}</tbody>
       </table>
     </div>
-  </div>
-</div>
+  </div>`;
+}
 
-<!-- ══ PAGE 2：路燈控制 ════════════════════════════════ -->
-<div id="page-control" class="page">
-  <div class="banner" id="banner"><div class="banner-icon" id="banner-icon">🤍</div><div><div class="banner-level" id="banner-level">系統待命</div><div class="banner-desc" id="banner-desc">尚未發布任何警戒</div><div class="banner-action" id="banner-action"></div></div></div>
+function renderControl(){
+  const t=T();
+  const LEVELS_DATA={
+    monitor:{label:t.ctrl_levels[0].label,action:t.ctrl_levels[0].desc,color:'#3b82f6',bg:'rgba(59,130,246,.08)'},
+    yellow: {label:t.ctrl_levels[1].label,action:t.ctrl_levels[1].desc,color:'#f59e0b',bg:'rgba(245,158,11,.08)'},
+    red:    {label:t.ctrl_levels[2].label,action:t.ctrl_levels[2].desc,color:'#ef4444',bg:'rgba(239,68,68,.08)'},
+    breach: {label:t.ctrl_levels[3].label,action:t.ctrl_levels[3].desc,color:'#ef4444',bg:'rgba(239,68,68,.15)'},
+    clear:  {label:t.ctrl_standby,action:'',color:'#cbd5e1',bg:'transparent'},
+  };
+  window._LEVELS_DATA=LEVELS_DATA;
+
+  document.getElementById('page-control').innerHTML=`
+  <div class="banner" id="banner">
+    <div class="banner-icon" id="banner-icon">🤍</div>
+    <div><div class="banner-level" id="banner-level">${t.ctrl_standby}</div>
+    <div class="banner-desc" id="banner-desc">${t.ctrl_no_alert}</div>
+    <div class="banner-action" id="banner-action"></div></div>
+  </div>
   <div class="grid2">
     <div class="card">
-      <div class="card-title">警戒等級控制（依真實事件分級）</div>
+      <div class="card-title">${t.ctrl_levels_title}</div>
       <div class="level-grid">
-        <button class="level-btn btn-monitor-l" onclick="setLevel('monitor')"><div class="lb-top">🔵 監控中 <span class="lb-date">7/26</span></div><div class="lb-desc">堰塞湖成形，持續觀測</div></button>
-        <button class="level-btn btn-yellow-l" onclick="setLevel('yellow')"><div class="lb-top">🟡 黃色警戒 <span class="lb-date">8/12</span></div><div class="lb-desc">楊柳颱風，預防性疏散</div></button>
-        <button class="level-btn btn-red-l" onclick="setLevel('red')"><div class="lb-top">🔴 紅色警戒 <span class="lb-date">9/22</span></div><div class="lb-desc">林保署發布，強制疏散</div></button>
-        <button class="level-btn btn-breach-l" onclick="setLevel('breach')"><div class="lb-top">🚨 潰壩溢流 <span class="lb-date">9/23</span></div><div class="lb-desc">14:40 溢流，緊急逃生</div></button>
-        <button class="level-btn btn-clear-l" onclick="setLevel('clear')">✅ 解除警報</button>
+        ${t.ctrl_levels.map((l,i)=>['monitor','yellow','red','breach'].map((k,j)=>i===j?`
+        <button class="level-btn ${l.cls}" onclick="setLevel('${k}')">
+          <div class="lb-top">${l.emoji} ${l.label} <span class="lb-date">${l.date}</span></div>
+          <div class="lb-desc">${l.desc}</div>
+        </button>`:'')).flat().join('')}
+        <button class="level-btn btn-clear-l" onclick="setLevel('clear')">${t.ctrl_clear}</button>
       </div>
-      <button class="demo-btn" onclick="runReplay()">▶ 播放完整事件時間軸 Demo</button>
+      <button class="demo-btn" onclick="runReplay()">${t.ctrl_demo}</button>
     </div>
     <div class="card">
-      <div class="card-title">真實事件時間軸</div>
+      <div class="card-title">${t.ctrl_timeline_title}</div>
       <div class="tl">
-        <div class="tl-item"><div class="tl-dot" style="background:#3b82f6"></div><div><div class="tl-date">2025-07-26</div><div class="tl-label" style="color:#93c5fd">堰塞湖形成</div><div class="tl-desc">土石崩塌堵塞馬太鞍溪，衛星確認</div></div></div>
-        <div class="tl-item"><div class="tl-dot" style="background:#f59e0b"></div><div><div class="tl-date">2025-08-12</div><div class="tl-label" style="color:#fcd34d">首次疏散令</div><div class="tl-desc">楊柳颱風，7個村里預防性疏散</div></div></div>
-        <div class="tl-item"><div class="tl-dot" style="background:#ef4444"></div><div><div class="tl-date">2025-09-22</div><div class="tl-label" style="color:#fca5a5">紅色警戒</div><div class="tl-desc">水位距溢流口僅5.44m，強制撤離8000人</div></div></div>
-        <div class="tl-item"><div class="tl-dot" style="background:#ef4444"></div><div><div class="tl-date">2025-09-23 14:40</div><div class="tl-label" style="color:#fca5a5">潰壩溢流</div><div class="tl-desc">樺加沙豪雨，洪水沖入光復鄉，19死</div></div></div>
+        ${t.ctrl_timeline.map(e=>`
+        <div class="tl-item"><div class="tl-dot" style="background:${e.color}"></div>
+        <div><div class="tl-date">${e.date}</div>
+        <div class="tl-label" style="color:${e.color}">${e.label}</div>
+        <div class="tl-desc">${e.desc}</div></div></div>`).join('')}
       </div>
     </div>
   </div>
   <div class="grid3">
-    <div class="card stat"><div class="stat-num" style="color:#3b82f6" id="total-count">7</div><div class="stat-label">路燈總數</div></div>
-    <div class="card stat"><div class="stat-num" style="color:#ef4444" id="alert-count">0</div><div class="stat-label">警示中</div></div>
-    <div class="card stat"><div class="stat-num" style="color:#22c55e" id="normal-count">7</div><div class="stat-label">正常 / 收容所</div></div>
+    <div class="card stat"><div class="stat-num" style="color:#3b82f6" id="total-count">7</div><div class="stat-label">${t.ctrl_total}</div></div>
+    <div class="card stat"><div class="stat-num" style="color:#ef4444" id="alert-count">0</div><div class="stat-label">${t.ctrl_alert}</div></div>
+    <div class="card stat"><div class="stat-num" style="color:#22c55e" id="normal-count">7</div><div class="stat-label">${t.ctrl_normal}</div></div>
   </div>
   <div class="card" style="margin-bottom:12px">
-    <div class="card-title">路燈即時狀態 ｜ 🔴上游區 🟡市區 🟢收容所</div>
+    <div class="card-title">${t.ctrl_lights_title}</div>
     <div class="lights-grid" id="lights-grid"></div>
   </div>
-  <div class="card"><div class="card-title">操作紀錄</div><div class="log-list" id="log-list"><div style="color:var(--muted);font-size:12px;text-align:center;padding:12px 0">尚無操作紀錄</div></div></div>
+  <div class="card"><div class="card-title">${t.ctrl_logs_title}</div>
+    <div class="log-list" id="log-list"><div style="color:var(--muted);font-size:12px;text-align:center;padding:12px 0">${t.ctrl_logs_empty}</div></div>
+  </div>
   <div class="card" id="confirm-panel" style="border:1.5px solid rgba(245,158,11,.4);background:rgba(245,158,11,.05)">
-    <div class="card-title" style="color:#fde68a">⏳ 待人工確認的路燈變色請求</div>
-    <div id="confirm-list"><div style="color:#9daacc;font-size:12px;text-align:center;padding:12px 0">目前無待確認項目</div></div>
+    <div class="card-title" style="color:#fde68a">${t.ctrl_pending_title}</div>
+    <div id="confirm-list"><div style="color:#9daacc;font-size:12px;text-align:center;padding:12px 0">${t.ctrl_pending_empty}</div></div>
   </div>
   <div class="card">
-    <div class="card-title">🔧 人工直接控制單燈</div>
+    <div class="card-title">${t.ctrl_manual_title}</div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
-      <div><label class="inp-label">選擇路燈</label><select id="manual-light" class="inp"><option value="all">全部路燈</option><option value="SL-001">SL-001 太巴塱村入口</option><option value="SL-002">SL-002 省道193線42K</option><option value="SL-003">SL-003 光復鄉公所前</option><option value="SL-004">SL-004 馬太鞍溪橋頭</option><option value="SL-005">SL-005 光榮村（收容所）</option><option value="SL-006">SL-006 大馬村</option><option value="SL-007">SL-007 大平村</option></select></div>
-      <div><label class="inp-label">燈色</label><select id="manual-color" class="inp"><option value="red">🔴 紅色（緊急）</option><option value="amber">🟡 黃色（警戒）</option><option value="blue">🔵 藍色（監控）</option><option value="green">🟢 綠色（收容所）</option><option value="white">🤍 白色（正常）</option></select></div>
-      <div><label class="inp-label">閃爍</label><select id="manual-flash" class="inp"><option value="none">不閃爍</option><option value="slow">慢閃（1.5秒）</option><option value="fast">快閃（0.8秒）</option><option value="urgent">極速閃（0.3秒）</option></select></div>
+      <div><label class="inp-label">${t.ctrl_sel_light}</label>
+        <select id="manual-light" class="inp">${t.ctrl_lights_opts.map((o,i)=>`<option value="${i===0?'all':['SL-001','SL-002','SL-003','SL-004','SL-005','SL-006','SL-007'][i-1]}">${o}</option>`).join('')}</select>
+      </div>
+      <div><label class="inp-label">${t.ctrl_color}</label>
+        <select id="manual-color" class="inp">${t.ctrl_color_opts.map((o,i)=>`<option value="${['red','amber','blue','green','white'][i]}">${o}</option>`).join('')}</select>
+      </div>
+      <div><label class="inp-label">${t.ctrl_flash}</label>
+        <select id="manual-flash" class="inp">${t.ctrl_flash_opts.map((o,i)=>`<option value="${['none','slow','fast','urgent'][i]}">${o}</option>`).join('')}</select>
+      </div>
     </div>
-    <button onclick="manualControl()" class="btn btn-blue" style="width:100%;padding:11px">🔧 立即套用（人工直接控制）</button>
-  </div>
-</div>
+    <button onclick="manualControl()" class="btn btn-blue" style="width:100%;padding:11px">${t.ctrl_apply}</button>
+  </div>`;
+  renderLights();
+  renderLogs();
+  renderConfirmPanel();
+}
 
-<!-- ══ PAGE 3：逃生路徑 ════════════════════════════════ -->
-<div id="page-escape" class="page">
-
-  <!-- 即時位置 + 最近收容所 -->
+function renderEscape(){
+  const t=T();
+  document.getElementById('page-escape').innerHTML=`
   <div class="card" style="border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.04)">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-      <div style="font-size:14px;font-weight:700;color:#fca5a5">🚨 目前位置 — 最近收容所</div>
-      <button onclick="locateAndFindShelter()" class="btn btn-red" style="font-size:12px;padding:7px 12px">📍 立即定位</button>
+      <div style="font-size:14px;font-weight:700;color:#fca5a5">${t.esc_nearest_title}</div>
+      <button onclick="locateAndFindShelter()" class="btn btn-red" style="font-size:12px;padding:7px 12px">${t.esc_locate_btn}</button>
     </div>
-    <div id="nearest-shelter" style="font-size:13px;color:#b0bedd;margin-bottom:10px">點擊「立即定位」取得目前位置，系統自動找出最近的政府指定收容所。</div>
+    <div id="nearest-shelter" style="font-size:13px;color:#b0bedd;margin-bottom:10px">${t.esc_locate_hint}</div>
     <div id="shelter-map" style="height:220px;display:none"></div>
   </div>
-
-  <!-- 預先設定路徑 -->
   <div class="card">
-    <div class="card-title">⚙️ 預先設定逃生路徑</div>
+    <div class="card-title">${t.esc_preset_title}</div>
     <div style="display:flex;gap:8px;margin-bottom:14px">
-      <button onclick="switchEscapeTab('home')" id="etab-home"
-        style="flex:1;padding:10px;border-radius:8px;border:1.5px solid rgba(59,130,246,.5);background:rgba(59,130,246,.15);color:#bfdbfe;font-size:13px;font-weight:700;cursor:pointer">
-        🏠 家裡的路線
-      </button>
-      <button onclick="switchEscapeTab('work')" id="etab-work"
-        style="flex:1;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:transparent;color:#9daacc;font-size:13px;font-weight:700;cursor:pointer">
-        🏢 公司 / 公共區域
-      </button>
+      <button onclick="switchEscapeTab('home')" id="etab-home" style="flex:1;padding:10px;border-radius:8px;border:1.5px solid rgba(59,130,246,.5);background:rgba(59,130,246,.15);color:#bfdbfe;font-size:13px;font-weight:700;cursor:pointer">${t.esc_home_tab}</button>
+      <button onclick="switchEscapeTab('work')" id="etab-work" style="flex:1;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:transparent;color:#9daacc;font-size:13px;font-weight:700;cursor:pointer">${t.esc_work_tab}</button>
     </div>
-
-    <!-- 家裡設定 -->
     <div id="escape-home">
       <div style="display:grid;gap:10px;margin-bottom:12px">
-        <div><label class="inp-label">家裡地址</label><input id="home-addr" class="inp" type="text" placeholder="例：花蓮縣光復鄉大馬村 12 鄰 3 號" value="花蓮縣光復鄉大馬村 12 鄰 3 號"/></div>
-        <div><label class="inp-label">指定收容所</label>
-          <select id="home-shelter" class="inp">
-            <option value="guangrong">光榮國小（光復鄉公所指定）</option>
-            <option value="guangfu">光復國中</option>
-            <option value="tapalong">太巴塱國小</option>
-          </select>
+        <div><label class="inp-label">${t.esc_home_addr}</label><input id="home-addr" class="inp" type="text" value="${currentLang==='zh'?'花蓮縣光復鄉大馬村 12 鄰 3 號':''}"/></div>
+        <div><label class="inp-label">${t.esc_home_shelter}</label>
+          <select id="home-shelter" class="inp">${t.esc_shelter_opts.map(o=>`<option>${o}</option>`).join('')}</select>
         </div>
-        <div><label class="inp-label">備用路線說明（選填）</label><input id="home-alt" class="inp" type="text" placeholder="例：台 9 線封路時，改走農路往北繞行"/></div>
+        <div><label class="inp-label">${t.esc_alt_route}</label><input id="home-alt" class="inp" type="text"/></div>
       </div>
-      <button onclick="saveRoute('home')" class="btn btn-blue" style="width:100%;padding:11px;margin-bottom:12px">💾 儲存家裡路線設定</button>
-      <div id="home-route-info" style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:9px;padding:12px;margin-bottom:10px">
-        <div style="font-size:13px;font-weight:700;color:#bfdbfe;margin-bottom:6px">📍 目前設定的家裡路線</div>
-        <div style="font-size:13px;color:#b0bedd;line-height:1.8">起點：<strong style="color:#f0f4ff">大馬村 12 鄰 3 號</strong><br>路線：沿台 9 線往北步行約 800 公尺<br>終點：<strong style="color:#86efac">光榮國小</strong>（約 12 分鐘）</div>
-        <div style="font-size:11px;color:#9daacc;margin-top:6px">⚠️ 路燈引導：綠色閃爍 = 安全方向，紅色閃爍 = 危險勿往</div>
+      <button onclick="saveRoute('home')" class="btn btn-blue" style="width:100%;padding:11px;margin-bottom:12px">${t.esc_save_home}</button>
+      <div style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:9px;padding:12px;margin-bottom:10px">
+        <div style="font-size:13px;font-weight:700;color:#bfdbfe;margin-bottom:6px">${t.esc_home_info_title}</div>
+        <div style="font-size:13px;color:#b0bedd;line-height:1.8">${t.esc_home_info}</div>
+        <div style="font-size:11px;color:#9daacc;margin-top:6px">${t.esc_light_hint}</div>
       </div>
       <div id="escape-map-home" style="height:260px;border-radius:10px;border:1px solid var(--border)"></div>
       <div style="display:flex;gap:8px;margin-top:10px">
-        <button onclick="startNav('home')" class="btn btn-green" style="flex:1;padding:11px">🧭 開始導航</button>
-        <button onclick="checkRoute('home')" class="btn btn-amber" style="flex:1;padding:11px">🤖 AI 路況檢查</button>
+        <button onclick="startNav('home')" class="btn btn-green" style="flex:1;padding:11px">${t.esc_nav}</button>
+        <button onclick="checkRoute('home')" class="btn btn-amber" style="flex:1;padding:11px">${t.esc_ai_check}</button>
       </div>
       <div id="route-check-home" style="display:none;margin-top:10px"></div>
-      <div style="margin-top:8px;padding:9px 12px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);border-radius:8px;font-size:11px;color:#fde68a">⚠️ AI 可能會出錯，請謹慎查核使用。路況分析結果僅供參考，請以政府公告為準。</div>
+      <div style="margin-top:8px;padding:9px 12px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);border-radius:8px;font-size:11px;color:#fde68a">${t.esc_ai_disclaimer}</div>
     </div>
-
-    <!-- 公共區域設定 -->
     <div id="escape-work" style="display:none">
       <div style="display:grid;gap:10px;margin-bottom:12px">
-        <div><label class="inp-label">公司 / 常去地點地址</label><input id="work-addr" class="inp" type="text" placeholder="例：花蓮縣光復鄉光復市場"/></div>
-        <div><label class="inp-label">管理單位</label><input id="work-mgr" class="inp" type="text" placeholder="例：光復鄉公所" value="光復鄉公所"/></div>
-        <div><label class="inp-label">指定逃生出口</label><input id="work-exit" class="inp" type="text" placeholder="例：市場北側出口 → 台 9 線往北"/></div>
-        <div><label class="inp-label">最近收容所</label>
-          <select id="work-shelter" class="inp">
-            <option value="guangrong">光榮國小（步行約 8 分鐘）</option>
-            <option value="guangfu">光復國中（步行約 12 分鐘）</option>
-          </select>
+        <div><label class="inp-label">${t.esc_work_addr}</label><input id="work-addr" class="inp" type="text"/></div>
+        <div><label class="inp-label">${t.esc_work_mgr}</label><input id="work-mgr" class="inp" type="text"/></div>
+        <div><label class="inp-label">${t.esc_work_exit}</label><input id="work-exit" class="inp" type="text"/></div>
+        <div><label class="inp-label">${t.esc_work_shelter}</label>
+          <select id="work-shelter" class="inp">${t.esc_work_shelter_opts.map(o=>`<option>${o}</option>`).join('')}</select>
         </div>
       </div>
-      <button onclick="saveRoute('work')" class="btn btn-purple" style="width:100%;padding:11px;margin-bottom:12px">💾 儲存公共區域路線設定</button>
-      <div id="work-route-info" style="background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.2);border-radius:9px;padding:12px;margin-bottom:10px">
-        <div style="font-size:13px;font-weight:700;color:#ddd6fe;margin-bottom:6px">🏢 目前設定的公共區域路線</div>
-        <div style="font-size:13px;color:#b0bedd;line-height:1.8">由 <strong style="color:#ddd6fe">光復鄉公所</strong> 規劃<br>逃生出口：<strong style="color:#f0f4ff">市場北側出口 → 台 9 線往北</strong><br>最近收容所：<strong style="color:#86efac">光榮國小（約 8 分鐘）</strong></div>
+      <button onclick="saveRoute('work')" class="btn btn-purple" style="width:100%;padding:11px;margin-bottom:12px">${t.esc_save_work}</button>
+      <div style="background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.2);border-radius:9px;padding:12px;margin-bottom:10px">
+        <div style="font-size:13px;font-weight:700;color:#ddd6fe;margin-bottom:6px">${t.esc_work_info_title}</div>
+        <div style="font-size:13px;color:#b0bedd;line-height:1.8">${t.esc_work_info}</div>
       </div>
       <div id="escape-map-work" style="height:260px;border-radius:10px;border:1px solid var(--border)"></div>
       <div style="display:flex;gap:8px;margin-top:10px">
-        <button onclick="startNav('work')" class="btn btn-green" style="flex:1;padding:11px">🧭 開始導航</button>
-        <button onclick="checkRoute('work')" class="btn btn-amber" style="flex:1;padding:11px">🤖 AI 路況檢查</button>
+        <button onclick="startNav('work')" class="btn btn-green" style="flex:1;padding:11px">${t.esc_nav}</button>
+        <button onclick="checkRoute('work')" class="btn btn-amber" style="flex:1;padding:11px">${t.esc_ai_check}</button>
       </div>
       <div id="route-check-work" style="display:none;margin-top:10px"></div>
-      <div style="margin-top:8px;padding:9px 12px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);border-radius:8px;font-size:11px;color:#fde68a">⚠️ AI 可能會出錯，請謹慎查核使用。路況分析結果僅供參考，請以政府公告為準。</div>
+      <div style="margin-top:8px;padding:9px 12px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);border-radius:8px;font-size:11px;color:#fde68a">${t.esc_ai_disclaimer}</div>
     </div>
-  </div>
-</div>
+  </div>`;
+  if(mapsInited['home']) setTimeout(initEscapeMaps,100);
+}
 
-<!-- ══ PAGE 4：安全回報 ════════════════════════════════ -->
-<div id="page-report" class="page">
+function renderReport(){
+  const t=T();
+  document.getElementById('page-report').innerHTML=`
   <div class="card">
-    <div class="card-title">🆘 個人安全狀態回報</div>
+    <div class="card-title">${t.rpt_title}</div>
     <div style="margin-bottom:18px">
-      <div style="font-size:14px;font-weight:700;color:#f0f4ff;margin-bottom:10px">步驟 1 ｜ 我目前的狀況</div>
+      <div style="font-size:14px;font-weight:700;color:#f0f4ff;margin-bottom:10px">${t.rpt_step1}</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
-        <button class="status-btn" onclick="selectStatus('safe')" style="padding:14px;border-radius:10px;border:1.5px solid rgba(34,197,94,.4);background:rgba(34,197,94,.1);color:#bbf7d0;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s">✅ 我安全了</button>
-        <button class="status-btn" onclick="selectStatus('injured')" style="padding:14px;border-radius:10px;border:1.5px solid rgba(245,158,11,.4);background:rgba(245,158,11,.1);color:#fde68a;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s">🤕 我受傷了</button>
-        <button class="status-btn" onclick="selectStatus('trapped')" style="padding:14px;border-radius:10px;border:1.5px solid rgba(239,68,68,.4);background:rgba(239,68,68,.1);color:#fca5a5;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s">🆘 我受困了</button>
-        <button class="status-btn" onclick="selectStatus('proxy')" style="padding:14px;border-radius:10px;border:1.5px solid rgba(139,92,246,.4);background:rgba(139,92,246,.1);color:#ddd6fe;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s">👥 代報他人</button>
+        <button class="status-btn" onclick="selectStatus('safe')" style="padding:14px;border-radius:10px;border:1.5px solid rgba(34,197,94,.4);background:rgba(34,197,94,.1);color:#bbf7d0;font-size:14px;font-weight:700;cursor:pointer">${t.rpt_btn_safe}</button>
+        <button class="status-btn" onclick="selectStatus('injured')" style="padding:14px;border-radius:10px;border:1.5px solid rgba(245,158,11,.4);background:rgba(245,158,11,.1);color:#fde68a;font-size:14px;font-weight:700;cursor:pointer">${t.rpt_btn_injured}</button>
+        <button class="status-btn" onclick="selectStatus('trapped')" style="padding:14px;border-radius:10px;border:1.5px solid rgba(239,68,68,.4);background:rgba(239,68,68,.1);color:#fca5a5;font-size:14px;font-weight:700;cursor:pointer">${t.rpt_btn_trapped}</button>
+        <button class="status-btn" onclick="selectStatus('proxy')" style="padding:14px;border-radius:10px;border:1.5px solid rgba(139,92,246,.4);background:rgba(139,92,246,.1);color:#ddd6fe;font-size:14px;font-weight:700;cursor:pointer">${t.rpt_btn_proxy}</button>
       </div>
     </div>
-
     <div id="report-detail" style="display:none">
       <div style="border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px">
-        <div style="font-size:14px;font-weight:700;color:#f0f4ff;margin-bottom:14px">步驟 2 ｜ 詳細資訊</div>
+        <div style="font-size:14px;font-weight:700;color:#f0f4ff;margin-bottom:14px">${t.rpt_step2}</div>
         <div style="display:grid;gap:12px">
-
-          <!-- 姓名（選填） -->
-          <div><label class="inp-label">姓名 <span style="font-size:11px;color:#6b7a99">（選填，匿名亦可）</span></label>
-          <input id="rpt-name" class="inp" type="text" placeholder="可不填"/></div>
-
-          <!-- 位置：地址 + GPS 並行 -->
+          <div><label class="inp-label">${t.rpt_name} <span style="font-size:11px;color:#6b7a99">${t.rpt_name_hint}</span></label>
+          <input id="rpt-name" class="inp" type="text"/></div>
           <div>
-            <label class="inp-label">目前位置（地址或 GPS，兩者並行）</label>
-            <input id="rpt-location" class="inp" type="text" placeholder="例：花蓮縣光復鄉大馬村 12 鄰 3 號" style="margin-bottom:6px"/>
+            <label class="inp-label">${t.rpt_location}</label>
+            <input id="rpt-location" class="inp" type="text" style="margin-bottom:6px"/>
             <div style="display:flex;gap:6px;align-items:center">
-              <button onclick="getLocation()" class="btn btn-blue" style="padding:8px 12px;font-size:12px">📍 GPS 定位</button>
+              <button onclick="getLocation()" class="btn btn-blue" style="padding:8px 12px;font-size:12px">${t.rpt_gps}</button>
               <div id="location-status" style="font-size:11px;color:#9daacc;flex:1"></div>
             </div>
             <div id="location-coords" style="display:none;margin-top:7px;background:#0d1117;border:1px solid rgba(59,130,246,.2);border-radius:8px;padding:9px 11px">
-              <div style="font-size:11px;color:#9daacc;margin-bottom:3px">📡 GPS 座標（已自動帶入）</div>
+              <div style="font-size:11px;color:#9daacc;margin-bottom:3px">${t.rpt_gps_coords}</div>
               <div id="coords-text" style="font-size:12px;color:#bfdbfe;font-family:monospace"></div>
               <div id="coords-map-link" style="margin-top:5px"></div>
             </div>
           </div>
-
-          <!-- 急救分級評估（SALT-inspired） -->
-          <div id="rpt-triage-wrap">
-            <label class="inp-label" style="font-size:13px;font-weight:700;color:#f0f4ff;margin-bottom:8px">急救狀況評估</label>
-
+          <div id="rpt-triage-wrap" style="display:none">
+            <label class="inp-label" style="font-size:13px;font-weight:700;color:#f0f4ff;margin-bottom:8px">${t.rpt_triage}</label>
             <div style="display:grid;gap:8px">
-              <div><label class="inp-label">① 意識狀況</label>
+              <div><label class="inp-label">${t.rpt_c1}</label>
               <select id="rpt-consciousness" class="inp" onchange="updateTriageResult()">
-                <option value="">請選擇</option>
-                <option value="clear">清醒，能正常對答</option>
-                <option value="confused">清醒，但意識混亂 / 答非所問</option>
-                <option value="responsive">對刺激有反應，但無法對答</option>
-                <option value="unresponsive">無反應（可能失去意識）</option>
+                ${t.rpt_c1_opts.map((o,i)=>`<option value="${['','clear','confused','responsive','unresponsive'][i]}">${o}</option>`).join('')}
               </select></div>
-
-              <div><label class="inp-label">② 有無外傷</label>
+              <div><label class="inp-label">${t.rpt_c2}</label>
               <select id="rpt-injury-type" class="inp" onchange="updateTriageResult()">
-                <option value="">請選擇</option>
-                <option value="none">無明顯外傷</option>
-                <option value="minor-cut">輕微擦傷 / 割傷（已止血）</option>
-                <option value="bleeding">持續出血（未能止血）</option>
-                <option value="fracture">疑似骨折</option>
-                <option value="head">頭部 / 脊椎受傷（勿移動）</option>
-                <option value="crush">被壓或夾住</option>
+                ${t.rpt_c2_opts.map((o,i)=>`<option value="${['','none','minor-cut','bleeding','fracture','head','crush'][i]}">${o}</option>`).join('')}
               </select></div>
-
-              <div><label class="inp-label">③ 可否自行移動</label>
+              <div><label class="inp-label">${t.rpt_c3}</label>
               <select id="rpt-mobility" class="inp" onchange="updateTriageResult()">
-                <option value="">請選擇</option>
-                <option value="walk">可自行步行</option>
-                <option value="assist">需要攙扶才能移動</option>
-                <option value="carry">無法移動，需要擔架 / 輪椅</option>
-                <option value="immobile">完全無法移動（脊椎 / 骨折疑慮）</option>
+                ${t.rpt_c3_opts.map((o,i)=>`<option value="${['','walk','assist','carry','immobile'][i]}">${o}</option>`).join('')}
               </select></div>
-
-              <div><label class="inp-label">④ 呼吸狀況</label>
+              <div><label class="inp-label">${t.rpt_c4}</label>
               <select id="rpt-breathing" class="inp" onchange="updateTriageResult()">
-                <option value="">請選擇</option>
-                <option value="normal">正常呼吸</option>
-                <option value="labored">呼吸費力 / 急促</option>
-                <option value="absent">無呼吸（需立即 CPR）</option>
+                ${t.rpt_c4_opts.map((o,i)=>`<option value="${['','normal','labored','absent'][i]}">${o}</option>`).join('')}
               </select></div>
             </div>
-
-            <!-- 自動分級顯示 -->
             <div id="triage-result" style="display:none;margin-top:10px;padding:10px 13px;border-radius:8px;font-size:13px;font-weight:700"></div>
           </div>
-
           <div>
-            <label class="inp-label">同行人數（含您自己）</label>
+            <label class="inp-label">${t.rpt_people}</label>
             <input id="rpt-people" class="inp" type="number" min="1" max="20" value="1"/>
           </div>
-
           <div>
-            <label class="inp-label">需要哪些協助？（可複選）</label>
+            <label class="inp-label">${t.rpt_help}</label>
             <div class="check-group">
-              <label class="check-item"><input type="checkbox" value="transport"> 交通接送</label>
-              <label class="check-item"><input type="checkbox" value="medical"> 醫療 / 急救</label>
-              <label class="check-item"><input type="checkbox" value="food"> 食物飲水</label>
-              <label class="check-item"><input type="checkbox" value="mobility"> 行動輔助（輪椅 / 擔架）</label>
-              <label class="check-item"><input type="checkbox" value="child"> 嬰幼兒照護</label>
-              <label class="check-item"><input type="checkbox" value="senior"> 長輩協助</label>
+              ${t.rpt_help_opts.map((o,i)=>`<label class="check-item"><input type="checkbox" value="${t.rpt_help_vals[i]}"> ${o}</label>`).join('')}
             </div>
           </div>
-
           <div>
-            <label class="inp-label">補充說明（選填）</label>
-            <textarea id="rpt-note" class="inp" placeholder="例：家中有一位行動不便的長輩，需要輪椅" style="height:72px;resize:none"></textarea>
+            <label class="inp-label">${t.rpt_note}</label>
+            <textarea id="rpt-note" class="inp" style="height:72px;resize:none"></textarea>
           </div>
         </div>
       </div>
-      <button onclick="submitReport()" class="btn btn-red" style="width:100%;padding:13px;font-size:14px">📡 送出回報</button>
+      <button onclick="submitReport()" class="btn btn-red" style="width:100%;padding:13px;font-size:14px">${t.rpt_submit}</button>
     </div>
   </div>
-
   <div class="card">
-    <div class="card-title">已送出的回報紀錄</div>
-    <div id="report-log"><div style="color:var(--muted);font-size:13px;text-align:center;padding:14px 0">尚未送出任何回報</div></div>
+    <div class="card-title">${t.rpt_log_title}</div>
+    <div id="report-log"><div style="color:var(--muted);font-size:13px;text-align:center;padding:14px 0">${t.rpt_log_empty}</div></div>
   </div>
-
-  <!-- 居民回報地圖 -->
   <div class="card">
     <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;gap:10px">
       <div>
-        <div style="font-size:13px;font-weight:700;color:#f0f4ff;margin-bottom:3px">📍 居民回報地圖</div>
-        <div style="font-size:12px;color:#9daacc;line-height:1.6">
-          居民回報後由<strong style="color:#b0bedd">情資中心統整查核</strong>，確認後才顯示於地圖上。<br>
-          地圖標記代表經情資中心審核的有效回報地點，不代表即時災情。
-        </div>
+        <div style="font-size:13px;font-weight:700;color:#f0f4ff;margin-bottom:3px">${t.rpt_map_title}</div>
+        <div style="font-size:12px;color:#9daacc;line-height:1.6">${t.rpt_map_desc}</div>
       </div>
-      <span style="flex-shrink:0;font-size:10px;padding:3px 8px;border-radius:6px;background:rgba(245,158,11,.15);color:#fde68a;font-weight:700;white-space:nowrap">情資中心審核後顯示</span>
+      <span style="flex-shrink:0;font-size:10px;padding:3px 8px;border-radius:6px;background:rgba(245,158,11,.15);color:#fde68a;font-weight:700;white-space:nowrap">${t.rpt_map_badge}</span>
     </div>
     <div id="report-map" style="height:300px;border-radius:9px;border:1px solid var(--border)"></div>
     <div style="display:flex;gap:12px;margin-top:10px;flex-wrap:wrap">
-      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#9daacc"><span style="width:12px;height:12px;border-radius:50%;background:#86efac;display:inline-block"></span>安全</div>
-      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#9daacc"><span style="width:12px;height:12px;border-radius:50%;background:#fde68a;display:inline-block"></span>受傷</div>
-      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#9daacc"><span style="width:12px;height:12px;border-radius:50%;background:#fca5a5;display:inline-block"></span>受困</div>
-      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#9daacc"><span style="width:12px;height:12px;border-radius:50%;background:#ddd6fe;display:inline-block"></span>代報他人</div>
+      ${['#86efac','#fde68a','#fca5a5','#ddd6fe'].map((c,i)=>`<div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#9daacc"><span style="width:12px;height:12px;border-radius:50%;background:${c};display:inline-block"></span>${t.rpt_map_legend[i]}</div>`).join('')}
     </div>
-    <div style="margin-top:10px;padding:10px 12px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);border-radius:8px;font-size:11px;color:#fde68a">
-      ⚠️ 地圖上的標記僅為模擬展示。實際部署時，回報資料須經情資中心人工查核後，才會更新至地圖。
-    </div>
-  </div>
-</div>
+    <div style="margin-top:10px;padding:10px 12px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);border-radius:8px;font-size:11px;color:#fde68a">${t.rpt_map_note}</div>
+  </div>`;
+  renderReportLog();
+}
 
-<!-- ══ PAGE 5：AI 影像辨識 ═══════════════════════════════ -->
-<div id="page-ai" class="page">
+function renderAI(){
+  const t=T();
+  document.getElementById('page-ai').innerHTML=`
   <div class="card">
-    <div class="card-title">🤖 AI 影像辨識 — 通報升級</div>
-    <div style="font-size:13px;color:#b0bedd;margin-bottom:14px;line-height:1.6">
-      上傳現場照片，Claude Vision 自動判斷積水深度、坍方類型，產出結構化風險資料（JSON），可直接標註至防災地圖。也可不上傳照片，直接人工輸入災況。
-    </div>
-
-    <!-- 上傳區（移至最上方） -->
+    <div class="card-title">${t.ai_title}</div>
+    <div style="font-size:13px;color:#b0bedd;margin-bottom:14px;line-height:1.6">${t.ai_desc}</div>
     <div class="upload-zone" onclick="document.getElementById('img-upload').click()" style="margin-bottom:14px">
       <input type="file" id="img-upload" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
       <div style="font-size:32px;margin-bottom:8px">📸</div>
-      <div style="font-size:14px;font-weight:700;color:#ddd6fe;margin-bottom:4px">點擊或拖曳上傳現場照片（選填）</div>
-      <div style="font-size:12px;color:#9daacc">上傳後可讓 AI 自動判斷災況，也可不上傳直接人工填寫</div>
+      <div style="font-size:14px;font-weight:700;color:#ddd6fe;margin-bottom:4px">${t.ai_upload_title}</div>
+      <div style="font-size:12px;color:#9daacc">${t.ai_upload_hint}</div>
     </div>
-
-    <!-- 預覽 -->
     <div id="img-preview-wrap" style="display:none;margin-bottom:14px">
       <img id="img-preview" style="width:100%;max-height:280px;object-fit:contain;border-radius:9px;border:1px solid var(--border)"/>
       <div style="display:flex;gap:8px;margin-top:10px">
-        <button onclick="analyzeImage()" class="btn btn-purple" style="flex:1;padding:11px">🔍 AI 自動分析影像</button>
-        <button onclick="clearImage()" class="btn btn-red" style="padding:11px 14px">✕</button>
+        <button onclick="analyzeImage()" class="btn btn-purple" style="flex:1;padding:11px">${t.ai_analyze}</button>
+        <button onclick="clearImage()" class="btn btn-red" style="padding:11px 14px">${t.ai_remove}</button>
       </div>
     </div>
-
-    <!-- AI 載入中 -->
     <div id="ai-loading" style="display:none;text-align:center;padding:20px;color:#9daacc;font-size:13px">
-      <div style="font-size:24px;margin-bottom:8px">🤖</div>Claude Vision 分析中，請稍候...
+      <div style="font-size:24px;margin-bottom:8px">🤖</div>${t.ai_analyzing}
     </div>
-
-    <!-- 地點輸入 -->
     <div style="background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.2);border-radius:10px;padding:14px;margin-bottom:14px">
-      <div style="font-size:13px;font-weight:700;color:#bfdbfe;margin-bottom:10px">📍 回報地點</div>
+      <div style="font-size:13px;font-weight:700;color:#bfdbfe;margin-bottom:10px">${t.ai_loc_title}</div>
       <div style="display:grid;gap:10px">
-        <div>
-          <label class="inp-label">地址（手動輸入）</label>
-          <input id="ai-location-text" class="inp" type="text" placeholder="例：花蓮縣光復鄉省道193線42公里處"/>
-        </div>
+        <div><label class="inp-label">${t.ai_loc_addr}</label>
+        <input id="ai-location-text" class="inp" type="text"/></div>
         <div style="display:flex;gap:8px;align-items:center">
-          <button onclick="getAiLocation()" class="btn btn-blue" style="padding:8px 12px;font-size:12px;flex-shrink:0">📍 GPS 定位</button>
+          <button onclick="getAiLocation()" class="btn btn-blue" style="padding:8px 12px;font-size:12px;flex-shrink:0">${t.ai_gps}</button>
           <div id="ai-location-status" style="font-size:11px;color:#9daacc;flex:1"></div>
         </div>
         <div id="ai-coords-wrap" style="display:none;background:#0d1117;border:1px solid rgba(59,130,246,.2);border-radius:8px;padding:9px 11px">
-          <div style="font-size:11px;color:#9daacc;margin-bottom:3px">📡 GPS 座標</div>
+          <div style="font-size:11px;color:#9daacc;margin-bottom:3px">${t.ai_gps_coords}</div>
           <div id="ai-coords-text" style="font-size:12px;color:#bfdbfe;font-family:monospace"></div>
         </div>
       </div>
     </div>
-
-    <!-- 人工輸入災況 -->
     <div style="background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:14px;margin-bottom:14px">
-      <div style="font-size:13px;font-weight:700;color:#fca5a5;margin-bottom:10px">🚨 災況資訊（可人工輸入或由 AI 自動填入）</div>
+      <div style="font-size:13px;font-weight:700;color:#fca5a5;margin-bottom:10px">${t.ai_hazard_title}</div>
       <div style="display:grid;gap:10px">
-        <div>
-          <label class="inp-label">災害類型</label>
-          <select id="ai-hazard-manual" class="inp">
-            <option value="">請選擇或由 AI 自動判斷</option>
-            <option value="積水">積水</option>
-            <option value="坍方">坍方 / 土石流</option>
-            <option value="道路損毀">道路損毀</option>
-            <option value="建物受損">建物受損</option>
-            <option value="橋樑損毀">橋樑損毀</option>
-            <option value="電線桿倒塌">電線桿倒塌</option>
-            <option value="無明顯災害">無明顯災害</option>
-          </select>
-        </div>
-        <div>
-          <label class="inp-label">嚴重程度</label>
-          <select id="ai-severity-manual" class="inp">
-            <option value="">請選擇或由 AI 自動判斷</option>
-            <option value="low">低（輕微，可通行）</option>
-            <option value="medium">中（需注意，謹慎通行）</option>
-            <option value="high">高（危險，建議迴避）</option>
-            <option value="critical">極高（嚴重，禁止通行）</option>
-          </select>
-        </div>
-        <div>
-          <label class="inp-label">補充說明（選填）</label>
-          <textarea id="ai-note-manual" class="inp" placeholder="例：積水深度約膝蓋，路面看不到，有車輛受困" style="height:68px;resize:none"></textarea>
-        </div>
+        <div><label class="inp-label">${t.ai_hazard_type}</label>
+        <select id="ai-hazard-manual" class="inp">
+          ${t.ai_hazard_opts.map((o,i)=>`<option value="${t.ai_hazard_vals[i]}">${o}</option>`).join('')}
+        </select></div>
+        <div><label class="inp-label">${t.ai_severity}</label>
+        <select id="ai-severity-manual" class="inp">
+          ${t.ai_severity_opts.map((o,i)=>`<option value="${t.ai_severity_vals[i]}">${o}</option>`).join('')}
+        </select></div>
+        <div><label class="inp-label">${t.ai_note}</label>
+        <textarea id="ai-note-manual" class="inp" style="height:68px;resize:none"></textarea></div>
       </div>
     </div>
-
-    <!-- AI 結果 -->
     <div id="ai-result-wrap" style="display:none;margin-top:14px">
-      <div style="font-size:13px;font-weight:700;color:#ddd6fe;margin-bottom:8px">📋 AI 分析結果 <span style="font-size:11px;color:#9daacc;font-weight:400">（可在上方欄位手動修改後再送出）</span></div>
+      <div style="font-size:13px;font-weight:700;color:#ddd6fe;margin-bottom:8px">${t.ai_result_title} <span style="font-size:11px;color:#9daacc;font-weight:400">${t.ai_result_hint}</span></div>
       <div id="ai-summary" style="background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.25);border-radius:9px;padding:12px;margin-bottom:10px;font-size:13px;color:#b0bedd;line-height:1.6"></div>
-      <div style="font-size:12px;font-weight:700;color:#9daacc;margin-bottom:6px">📦 結構化輸出（JSON）</div>
+      <div style="font-size:12px;font-weight:700;color:#9daacc;margin-bottom:6px">📦 JSON</div>
       <pre id="ai-json" class="ai-result"></pre>
       <div style="display:flex;gap:8px;margin-top:10px">
-        <button onclick="markOnMap()" class="btn btn-green" style="flex:1;padding:11px;font-size:13px">📍 標註至防災地圖</button>
-        <button onclick="copyJson()" class="btn btn-blue" style="padding:11px 14px;font-size:13px">📋 複製 JSON</button>
+        <button onclick="markOnMap()" class="btn btn-green" style="flex:1;padding:11px;font-size:13px">${t.ai_mark_map}</button>
+        <button onclick="copyJson()" class="btn btn-blue" style="padding:11px 14px;font-size:13px">${t.ai_copy_json}</button>
       </div>
       <div id="ai-map" style="height:260px;margin-top:12px;border-radius:10px;border:1px solid var(--border);display:none"></div>
     </div>
-
-    <!-- 人工直接送出（不需 AI） -->
     <div style="margin-top:14px">
-      <button onclick="submitManualReport()" class="btn btn-red" style="width:100%;padding:12px;font-size:14px">
-        📡 直接送出人工回報（不需 AI 分析）
-      </button>
+      <button onclick="submitManualReport()" class="btn btn-red" style="width:100%;padding:12px;font-size:14px">${t.ai_manual_submit}</button>
     </div>
-
-    <!-- AI 免責聲明 -->
     <div style="margin-top:16px;padding:12px 14px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.25);border-radius:9px;display:flex;gap:10px;align-items:flex-start">
       <span style="font-size:18px;flex-shrink:0">⚠️</span>
       <div style="font-size:12px;color:#fde68a;line-height:1.7">
-        <strong>AI 可能會出錯，請謹慎查核使用。</strong><br>
-        本功能由 AI 模型自動分析影像，結果僅供參考，不代表官方災情認定。實際狀況請以政府機關公告及現場人員判斷為準。分析結果送出前，請由情資中心人員人工查核確認後再標註發布。
+        <strong>${t.ai_disclaimer_title}</strong><br>${t.ai_disclaimer_body}
       </div>
     </div>
-  </div>
-</div>
+  </div>`;
+}
 
-<!-- ══ PAGE 6：監測資料 ════════════════════════════════ -->
-<div id="page-monitor" class="page">
+function renderMonitor(){
+  const t=T();
+  document.getElementById('page-monitor').innerHTML=`
   <div class="card">
-    <div class="card-title">馬太鞍溪水位趨勢（模擬重建數據・僅供展示）
-      <a href="https://fhy.wra.gov.tw/fhyv2/monitor/water" target="_blank" class="lnk" style="float:right;text-transform:none;letter-spacing:0;font-weight:400">→ 水利署即時水位</a>
+    <div class="card-title">${t.mon_water_title}
+      <a href="https://fhy.wra.gov.tw/fhyv2/monitor/water" target="_blank" class="lnk" style="float:right;text-transform:none;letter-spacing:0;font-weight:400">${t.mon_water_link}</a>
     </div>
     <div style="position:relative;height:180px"><canvas id="waterChart"></canvas></div>
-    <div style="font-size:11px;color:#9daacc;margin-top:6px">⚠️ 模擬數據，供防災演示使用。<a href="https://fhy.wra.gov.tw/fhyv2/monitor/water" target="_blank" class="lnk">查看即時水位 →</a></div>
+    <div style="font-size:11px;color:#9daacc;margin-top:6px">${t.mon_water_note} <a href="https://fhy.wra.gov.tw/fhyv2/monitor/water" target="_blank" class="lnk">${t.mon_water_link2}</a></div>
   </div>
   <div class="card">
-    <div class="card-title">花蓮光復雨量趨勢（模擬重建數據）
-      <a href="https://fhy.wra.gov.tw/fhyv2/monitor/rain" target="_blank" class="lnk" style="float:right;text-transform:none;letter-spacing:0;font-weight:400">→ 水利署即時雨量</a>
+    <div class="card-title">${t.mon_rain_title}
+      <a href="https://fhy.wra.gov.tw/fhyv2/monitor/rain" target="_blank" class="lnk" style="float:right;text-transform:none;letter-spacing:0;font-weight:400">${t.mon_rain_link}</a>
     </div>
     <div style="position:relative;height:180px"><canvas id="rainChart"></canvas></div>
-    <div style="font-size:11px;color:#9daacc;margin-top:6px">⚠️ 模擬數據。<a href="https://fhy.wra.gov.tw/fhyv2/monitor/rain" target="_blank" class="lnk">查看即時雨量 →</a></div>
+    <div style="font-size:11px;color:#9daacc;margin-top:6px">${t.mon_rain_note} <a href="https://fhy.wra.gov.tw/fhyv2/monitor/rain" target="_blank" class="lnk">${t.mon_rain_link2}</a></div>
   </div>
   <div class="card">
-    <div class="card-title">NCDR 馬太鞍溪堰塞湖監測</div>
+    <div class="card-title">${t.mon_ncdr_title}</div>
     <div style="position:relative;border-radius:8px;overflow:hidden;border:1px solid var(--border)">
       <iframe src="https://watch.ncdr.nat.gov.tw/watch_barrier_map_v2" height="380" style="width:100%;border:none;display:block" sandbox="allow-scripts allow-same-origin"></iframe>
     </div>
-    <div style="font-size:11px;color:#9daacc;margin-top:6px">若未正常載入：<a href="https://watch.ncdr.nat.gov.tw/watch_barrier_map_v2" target="_blank" class="lnk">直接開啟 →</a></div>
-  </div>
-</div>
-
-<!-- ══ PAGE 7：資料來源 ════════════════════════════════ -->
-<div id="page-sources" class="page">
-  <div class="card">
-    <div class="card-title">相關監測與資訊來源</div>
-    <div class="source-grid">
-      <a class="source-card" href="https://watch.ncdr.nat.gov.tw/watch_barrier_map_v2" target="_blank"><div class="source-name">🗺️ NCDR 堰塞湖監測</div><div class="source-org">國家災害防救科技中心</div><div class="source-desc">馬太鞍溪堰塞湖即時監測地圖，含水位、雨量、衛星正射影像</div><span class="tag tag-safe">即時監測</span></a>
-      <a class="source-card" href="https://fhy.wra.gov.tw/fhyv2/monitor/water" target="_blank"><div class="source-name">💧 即時水位監測</div><div class="source-org">水利署防災資訊網</div><div class="source-desc">全台中央管河川即時水位資料，每10分鐘更新</div><span class="tag tag-safe">每10分鐘更新</span></a>
-      <a class="source-card" href="https://fhy.wra.gov.tw/fhyv2/monitor/rain" target="_blank"><div class="source-name">🌧️ 即時雨量監測</div><div class="source-org">水利署防災資訊網</div><div class="source-desc">全台各雨量站即時累積雨量</div><span class="tag tag-safe">即時監測</span></a>
-      <a class="source-card" href="https://fhy.wra.gov.tw/fhyv2/monitor/cctvTable" target="_blank"><div class="source-name">📹 即時監控影像</div><div class="source-org">水利署防災資訊網</div><div class="source-desc">馬太鞍溪橋等監控點的即時 CCTV 影像</div><span class="tag tag-safe">即時影像</span></a>
-      <a class="source-card" href="https://www.hl.gov.tw/ysh/" target="_blank"><div class="source-name">🏛️ 堰塞湖資訊專區</div><div class="source-org">花蓮縣政府</div><div class="source-desc">官方資訊專區，含最新消息、疏散資訊、收容所位置</div><span class="tag tag-safe">官方公告</span></a>
-      <a class="source-card" href="https://www.iiicloud.com.tw/FarmlandQlakenew/BarrierLake" target="_blank"><div class="source-name">🌲 林保署監測系統</div><div class="source-org">農業部林業及自然保育署</div><div class="source-desc">國有林防災應變及堰塞湖監測，含即時影像</div><span class="tag tag-safe">即時影像</span></a>
-      <a class="source-card" href="https://storymaps.arcgis.com/collections/54779cf3c8314073b1edb6115bc9a9a0" target="_blank"><div class="source-name">🗂️ 應變監測圖資</div><div class="source-org">ArcGIS StoryMaps</div><div class="source-desc">堰塞湖應變圖資集合，含衛星影像、影響範圍地圖</div><span class="tag tag-system">GIS 地圖</span></a>
-      <a class="source-card" href="https://data.gov.tw/dataset/25768" target="_blank"><div class="source-name">🔌 水位 Open Data API</div><div class="source-org">政府資料開放平台</div><div class="source-desc">水位站即時觀測 API，每10分鐘更新，適合開發者串接</div><span class="tag tag-system">開放 API</span></a>
-      <a class="source-card" href="https://opendata.cwa.gov.tw/about/application" target="_blank"><div class="source-name">⛅ 氣象開放資料平台</div><div class="source-org">中央氣象署</div><div class="source-desc">雨量、氣溫、颱風路徑等免費 API，可申請金鑰串接</div><span class="tag tag-system">開放 API</span></a>
-    </div>
-  </div>
-</div>
-
-</div><!-- end page-wrap -->
-
-<div class="toast" id="toast"></div>
-
-<script>
-// ══════════════════════════════════════════════════════
-// TAB 切換
-// ══════════════════════════════════════════════════════
-const TAB_NAMES = ['flow','control','escape','report','ai','monitor','sources'];
-let mapsInited = {};
-function switchTab(name) {
-  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', TAB_NAMES[i]===name));
-  document.querySelectorAll('.bnav-btn').forEach((t,i) => t.classList.toggle('active', TAB_NAMES[i]===name));
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-'+name).classList.add('active');
-  if(name==='monitor' && !chartsInited) initCharts();
-  if(name==='escape' && !mapsInited['home']) setTimeout(initEscapeMaps, 100);
-  else if(name==='escape') {
-    setTimeout(()=>{ Object.values(escapeMaps).forEach(m=>m?.invalidateSize()); }, 100);
-  }
-  if(name==='report') setTimeout(()=>{ initReportMap(); if(reportMapInst) reportMapInst.invalidateSize(); }, 150);
+    <div style="font-size:11px;color:#9daacc;margin-top:6px">${t.mon_ncdr_note}<a href="https://watch.ncdr.nat.gov.tw/watch_barrier_map_v2" target="_blank" class="lnk">${t.mon_ncdr_link}</a></div>
+  </div>`;
+  if(!chartsInited) setTimeout(initCharts,200);
 }
 
-// ══════════════════════════════════════════════════════
-// 路燈資料
-// ══════════════════════════════════════════════════════
-const MOCK_LIGHTS = {
-  'SL-001':{name:'太巴塱村入口', zone:'upstream',status:'normal',color:'white',flash:false,flash_speed:null},
-  'SL-002':{name:'省道193線42K', zone:'upstream',status:'normal',color:'white',flash:false,flash_speed:null},
-  'SL-003':{name:'光復鄉公所前', zone:'downtown',status:'normal',color:'white',flash:false,flash_speed:null},
-  'SL-004':{name:'馬太鞍溪橋頭', zone:'upstream',status:'normal',color:'white',flash:false,flash_speed:null},
-  'SL-005':{name:'光榮村（收容所）',zone:'shelter',status:'normal',color:'white',flash:false,flash_speed:null},
-  'SL-006':{name:'大馬村',       zone:'upstream',status:'normal',color:'white',flash:false,flash_speed:null},
-  'SL-007':{name:'大平村',       zone:'upstream',status:'normal',color:'white',flash:false,flash_speed:null},
-};
-const MOCK_LOGS=[], PENDING_CONFIRMS=[];
-const LEVELS={
-  monitor:{icon:'🔵',color:'#3b82f6',bg:'rgba(59,130,246,.08)',label:'監控中',   action:'持續監測水位，民眾正常生活'},
-  yellow: {icon:'🟡',color:'#f59e0b',bg:'rgba(245,158,11,.08)',label:'黃色警戒', action:'低窪地區準備疏散，隨時注意通知'},
-  red:    {icon:'🔴',color:'#ef4444',bg:'rgba(239,68,68,.08)', label:'紅色警戒', action:'立即疏散，前往光榮國小等指定收容所'},
-  breach: {icon:'🚨',color:'#ef4444',bg:'rgba(239,68,68,.15)',label:'潰壩溢流', action:'立即往高處逃生，不要等待，不要返家取物'},
-  clear:  {icon:'🤍',color:'#cbd5e1',bg:'transparent',         label:'系統待命', action:''},
-};
-const COLOR_ICON={white:'🤍',blue:'🔵',amber:'🟡',red:'🔴',green:'🟢'};
-const ZONE_LABEL={upstream:'上游區',downtown:'市區',shelter:'收容所'};
+function renderSources(){
+  const t=T();
+  document.getElementById('page-sources').innerHTML=`
+  <div class="card">
+    <div class="card-title">${t.src_title}</div>
+    <div class="source-grid">
+      ${t.src_items.map(s=>`
+      <a class="source-card" href="${s.url}" target="_blank">
+        <div class="source-name">${s.icon} ${s.name}</div>
+        <div class="source-org">${s.org}</div>
+        <div class="source-desc">${s.desc}</div>
+        <span class="tag tag-safe">${s.tag}</span>
+      </a>`).join('')}
+    </div>
+  </div>`;
+}
 
+// ── 語言切換 ──────────────────────────────────────────
+function setLang(lang){
+  currentLang=lang;
+  document.querySelectorAll('.lang-btn').forEach(b=>{
+    b.classList.toggle('active',b.textContent.trim()==={zh:'中文',en:'English',vi:'Tiếng Việt',ja:'日本語',ko:'한국어'}[lang]);
+  });
+  renderNav();
+  // 重新渲染當前頁面
+  const activePage=document.querySelector('.page.active');
+  if(activePage) renderPage(activePage.id.replace('page-',''));
+}
+
+// ── 路燈功能 ──────────────────────────────────────────
 function applyLevel(level){
+  const t=T();
   Object.entries(MOCK_LIGHTS).forEach(([id,l])=>{
     if(l.zone==='shelter'){
       if(['red','breach'].includes(level)){l.color='green';l.flash=false;l.status='shelter';}
@@ -773,69 +1603,84 @@ function applyLevel(level){
       Object.assign(l,m[level]);
     }
   });
-  MOCK_LOGS.unshift({timestamp:new Date().toISOString(),level,label:LEVELS[level].label,affected:7});
-}
-
-function renderBanner(level){
-  const lv=LEVELS[level];
-  const b=document.getElementById('banner');
-  b.style.background=lv.bg; b.style.borderColor=lv.color+'55';
-  document.getElementById('banner-icon').textContent=lv.icon;
-  document.getElementById('banner-level').textContent=lv.label;
-  document.getElementById('banner-level').style.color=lv.color;
-  const descs={monitor:'堰塞湖形成，水位持續觀測中',yellow:'颱風接近，水位快速上升，預防性疏散',
-               red:'水位超過警戒線，強制疏散令發布',breach:'堰塞湖已溢流，洪水正在下衝，立即逃生',clear:'尚未發布任何警戒'};
-  document.getElementById('banner-desc').textContent=descs[level];
-  document.getElementById('banner-action').textContent=lv.action;
-  document.getElementById('banner-action').style.color=lv.color;
+  const ld=T().ctrl_levels[[
+    'monitor','yellow','red','breach','clear'
+  ].indexOf(level)];
+  MOCK_LOGS.unshift({timestamp:new Date().toISOString(),level,label:T().ctrl_levels[[0,1,2,3].indexOf(['monitor','yellow','red','breach'].indexOf(level))]?.label||T().ctrl_standby,affected:7});
 }
 
 function renderLights(){
-  const g=document.getElementById('lights-grid'); let alertCount=0;
-  g.innerHTML=Object.entries(MOCK_LIGHTS).map(([id,l])=>{
+  const g=document.getElementById('lights-grid');
+  if(!g) return;
+  const t=T();
+  const ZONE_LABEL={'upstream':t.zone_upstream,'downtown':t.zone_downtown,'shelter':t.zone_shelter};
+  let alertCount=0;
+  const lightNames=t.ctrl_lights_opts.slice(1);
+  g.innerHTML=Object.entries(MOCK_LIGHTS).map(([id,l],i)=>{
     if(l.status==='alert')alertCount++;
     const fc=l.flash?`flash-${l.flash_speed}`:'';
-    return `<div class="light-card zone-${l.zone}"><span class="light-icon ${fc}">${COLOR_ICON[l.color]||'🤍'}</span><div class="light-name">${l.name}</div><div class="light-zone">${ZONE_LABEL[l.zone]}</div><span class="light-tag ${l.status==='shelter'?'tag-shelter':l.status==='alert'?'tag-alert':'tag-normal'}">${l.status==='shelter'?'收容所':l.status==='alert'?'警示中':'正常'}</span></div>`;
+    const tag=l.status==='shelter'?t.light_shelter:l.status==='alert'?t.light_alert:t.light_normal;
+    const cls=l.status==='shelter'?'tag-shelter':l.status==='alert'?'tag-alert':'tag-normal';
+    return `<div class="light-card zone-${l.zone}"><span class="light-icon ${fc}">${COLOR_ICON[l.color]||'🤍'}</span>
+    <div class="light-name">${lightNames[i]||id}</div>
+    <div class="light-zone">${ZONE_LABEL[l.zone]||l.zone}</div>
+    <span class="light-tag ${cls}">${tag}</span></div>`;
   }).join('');
-  document.getElementById('alert-count').textContent=alertCount;
-  document.getElementById('normal-count').textContent=7-alertCount;
+  const ac=document.getElementById('alert-count');
+  const nc=document.getElementById('normal-count');
+  if(ac) ac.textContent=alertCount;
+  if(nc) nc.textContent=7-alertCount;
 }
 
 function renderLogs(){
   const el=document.getElementById('log-list');
-  if(!MOCK_LOGS.length){el.innerHTML=`<div style="color:var(--muted);font-size:12px;text-align:center;padding:12px 0">尚無操作紀錄</div>`;return;}
+  if(!el) return;
+  const t=T();
+  if(!MOCK_LOGS.length){el.innerHTML=`<div style="color:var(--muted);font-size:12px;text-align:center;padding:12px 0">${t.ctrl_logs_empty}</div>`;return;}
   const colors={monitor:'#93c5fd',yellow:'#fcd34d',red:'#fca5a5',breach:'#fca5a5',clear:'#86efac',manual:'#c4b5fd'};
   el.innerHTML=MOCK_LOGS.slice(0,8).map(l=>{
-    const t=new Date(l.timestamp).toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-    return `<div class="log-item"><span class="log-time">${t}</span><span class="log-badge" style="background:${colors[l.level]}22;color:${colors[l.level]}">${l.label}</span><span style="color:#b0bedd">${l.affected} 盞路燈已更新</span></div>`;
+    const ts=new Date(l.timestamp).toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    const lvlIdx=['monitor','yellow','red','breach'].indexOf(l.level);
+    const label=lvlIdx>=0?T().ctrl_levels[lvlIdx]?.label:(l.label||l.level);
+    return `<div class="log-item"><span class="log-time">${ts}</span><span class="log-badge" style="background:${colors[l.level]||'#9daacc'}22;color:${colors[l.level]||'#9daacc'}">${label}</span><span style="color:#b0bedd">${l.affected} 💡</span></div>`;
   }).join('');
 }
 
-function addPendingConfirm(level, label, source){
+function renderConfirmPanel(){
+  const el=document.getElementById('confirm-list');
+  if(!el) return;
+  const t=T();
+  const pending=PENDING_CONFIRMS.filter(p=>p.status==='pending');
+  if(!pending.length){el.innerHTML=`<div style="color:#9daacc;font-size:12px;text-align:center;padding:12px 0">${t.ctrl_pending_empty}</div>`;return;}
+  el.innerHTML=pending.map(p=>{
+    const ts=new Date(p.timestamp).toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    return `<div style="display:flex;align-items:center;gap:8px;padding:9px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);border-radius:8px;margin-bottom:7px">
+    <div style="flex:1"><div style="font-size:13px;font-weight:700;color:#f0f4ff">${p.label}</div><div style="font-size:10px;color:#9daacc;margin-top:1px">${ts}</div></div>
+    <button onclick="confirmPending(${p.id},true)" style="padding:6px 12px;border-radius:6px;background:rgba(34,197,94,.2);color:#86efac;border:1px solid rgba(34,197,94,.4);font-size:11px;font-weight:700;cursor:pointer">${t.ctrl_approve}</button>
+    <button onclick="confirmPending(${p.id},false)" style="padding:6px 12px;border-radius:6px;background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.3);font-size:11px;font-weight:700;cursor:pointer">${t.ctrl_reject}</button>
+    </div>`;
+  }).join('');
+}
+
+function addPendingConfirm(level,label,source){
   PENDING_CONFIRMS.unshift({id:Date.now(),timestamp:new Date().toISOString(),level,label,source,status:'pending'});
   renderConfirmPanel();
 }
-function renderConfirmPanel(){
-  const el=document.getElementById('confirm-list');
-  const pending=PENDING_CONFIRMS.filter(p=>p.status==='pending');
-  if(!pending.length){el.innerHTML=`<div style="color:#9daacc;font-size:12px;text-align:center;padding:12px 0">目前無待確認項目</div>`;return;}
-  el.innerHTML=pending.map(p=>{
-    const t=new Date(p.timestamp).toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-    return `<div style="display:flex;align-items:center;gap:8px;padding:9px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);border-radius:8px;margin-bottom:7px"><div style="flex:1"><div style="font-size:13px;font-weight:700;color:#f0f4ff">${p.label}</div><div style="font-size:10px;color:#9daacc;margin-top:1px">來源：${p.source}・${t}</div></div><button onclick="confirmPending(${p.id},true)" style="padding:6px 12px;border-radius:6px;background:rgba(34,197,94,.2);color:#86efac;border:1px solid rgba(34,197,94,.4);font-size:11px;font-weight:700;cursor:pointer">✅ 核准</button><button onclick="confirmPending(${p.id},false)" style="padding:6px 12px;border-radius:6px;background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.3);font-size:11px;font-weight:700;cursor:pointer">❌ 拒絕</button></div>`;
-  }).join('');
-}
-function confirmPending(id, approved){
+
+function confirmPending(id,approved){
   const item=PENDING_CONFIRMS.find(p=>p.id===id);
   if(!item)return;
   item.status=approved?'approved':'rejected';
-  if(approved){applyLevel(item.level);renderBanner(item.level);renderLights();renderLogs();showToast(`✅ 已核准：${item.label} 路燈變色已執行`);}
-  else showToast(`❌ 已拒絕：${item.label} 請求取消`);
+  if(approved){applyLevel(item.level);renderLights();renderLogs();showToast('✅ '+item.label);}
   renderConfirmPanel();
 }
 
 async function setLevel(level){
-  addPendingConfirm(level, LEVELS[level].label+' 警戒','水位感測器自動觸發');
-  showToast(`⏳「${LEVELS[level].label}」已進入待確認佇列，請人工審核`);
+  const t=T();
+  const lvlIdx=['monitor','yellow','red','breach'].indexOf(level);
+  const label=lvlIdx>=0?t.ctrl_levels[lvlIdx].label:t.ctrl_standby;
+  addPendingConfirm(level,label,'Auto');
+  showToast('⏳ '+label);
 }
 
 function manualControl(){
@@ -846,242 +1691,165 @@ function manualControl(){
   const targets=lightId==='all'?Object.keys(MOCK_LIGHTS):[lightId];
   targets.forEach(id=>{if(MOCK_LIGHTS[id]){MOCK_LIGHTS[id].color=color;MOCK_LIGHTS[id].flash=flashBool;MOCK_LIGHTS[id].flash_speed=flash==='none'?null:flash;MOCK_LIGHTS[id].status=color==='white'?'normal':'alert';}});
   renderLights();
-  MOCK_LOGS.unshift({timestamp:new Date().toISOString(),level:'manual',label:'人工控制',affected:targets.length});
+  MOCK_LOGS.unshift({timestamp:new Date().toISOString(),level:'manual',label:'Manual',affected:targets.length});
   renderLogs();
-  showToast(`🔧 人工控制：${lightId==='all'?'全部路燈':MOCK_LIGHTS[lightId]?.name} → ${color}色${flashBool?'閃爍':'常亮'}`);
+  showToast('🔧 OK');
 }
 
 async function runReplay(){
   for(const level of ['monitor','yellow','red','breach']){
-    addPendingConfirm(level,LEVELS[level].label+' 警戒','時間軸 Demo');
-    applyLevel(level);renderBanner(level);renderLights();renderLogs();
-    showToast(`▶ ${LEVELS[level].label}`);
+    applyLevel(level);
+    MOCK_LOGS.unshift({timestamp:new Date().toISOString(),level,label:T().ctrl_levels[['monitor','yellow','red','breach'].indexOf(level)].label,affected:7});
+    renderLights();renderLogs();
+    showToast('▶ '+T().ctrl_levels[['monitor','yellow','red','breach'].indexOf(level)].label);
     await new Promise(r=>setTimeout(r,1800));
   }
-  showToast('🎬 時間軸播放完畢');
 }
 
-// ══════════════════════════════════════════════════════
-// 逃生路徑
-// ══════════════════════════════════════════════════════
-let escapeMaps={};
-const SHELTERS=[
-  {name:'光榮國小',lat:23.6478,lng:121.4267,type:'國小',capacity:500},
-  {name:'光復國中',lat:23.6501,lng:121.4290,type:'國中',capacity:300},
-  {name:'太巴塱國小',lat:23.6432,lng:121.4231,type:'國小',capacity:200},
-];
-
+// ── 逃生路徑 ──────────────────────────────────────────
 function initEscapeMaps(){
-  // 家裡地圖
+  if(mapsInited['home']) return;
   const m1=L.map('escape-map-home').setView([23.6432,121.4187],14);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:19}).addTo(m1);
-  const homeIcon=L.divIcon({html:'🏠',className:'',iconSize:[24,24]});
-  const shelterIcon=L.divIcon({html:'🏫',className:'',iconSize:[24,24]});
-  L.marker([23.6320,121.4050],{icon:homeIcon}).addTo(m1).bindPopup('您的家：大馬村 12 鄰 3 號');
-  L.marker([23.6478,121.4267],{icon:shelterIcon}).addTo(m1).bindPopup('光榮國小（收容所）');
+  L.marker([23.6320,121.4050],{icon:L.divIcon({html:'🏠',className:'',iconSize:[24,24]})}).addTo(m1).bindPopup('Home');
+  L.marker([23.6478,121.4267],{icon:L.divIcon({html:'🏫',className:'',iconSize:[24,24]})}).addTo(m1).bindPopup('Shelter');
   L.polyline([[23.6320,121.4050],[23.6390,121.4150],[23.6478,121.4267]],{color:'#3b82f6',weight:3,dashArray:'8,4'}).addTo(m1);
-  SHELTERS.forEach(s=>{L.circleMarker([s.lat,s.lng],{radius:8,color:'#22c55e',fillColor:'#22c55e',fillOpacity:.4}).addTo(m1).bindPopup(`${s.name}｜容納 ${s.capacity} 人`);});
-  escapeMaps['home']=m1;
-  mapsInited['home']=true;
-
-  // 公共區域地圖
+  SHELTERS.forEach(s=>{L.circleMarker([s.lat,s.lng],{radius:8,color:'#22c55e',fillColor:'#22c55e',fillOpacity:.4}).addTo(m1).bindPopup(s.name);});
+  escapeMaps['home']=m1; mapsInited['home']=true;
   setTimeout(()=>{
+    if(!document.getElementById('escape-map-work')) return;
     const m2=L.map('escape-map-work').setView([23.6501,121.4312],14);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:19}).addTo(m2);
-    const publicIcon=L.divIcon({html:'🏢',className:'',iconSize:[24,24]});
-    L.marker([23.6501,121.4312],{icon:publicIcon}).addTo(m2).bindPopup('光復市場');
-    L.marker([23.6478,121.4267],{icon:L.divIcon({html:'🏫',className:'',iconSize:[24,24]})}).addTo(m2).bindPopup('光榮國小（收容所）');
+    L.marker([23.6501,121.4312],{icon:L.divIcon({html:'🏢',className:'',iconSize:[24,24]})}).addTo(m2).bindPopup('Office');
+    L.marker([23.6478,121.4267],{icon:L.divIcon({html:'🏫',className:'',iconSize:[24,24]})}).addTo(m2).bindPopup('Shelter');
     L.polyline([[23.6501,121.4312],[23.6490,121.4280],[23.6478,121.4267]],{color:'#8b5cf6',weight:3,dashArray:'8,4'}).addTo(m2);
-    SHELTERS.forEach(s=>{L.circleMarker([s.lat,s.lng],{radius:8,color:'#22c55e',fillColor:'#22c55e',fillOpacity:.4}).addTo(m2).bindPopup(`${s.name}｜容納 ${s.capacity} 人`);});
+    SHELTERS.forEach(s=>{L.circleMarker([s.lat,s.lng],{radius:8,color:'#22c55e',fillColor:'#22c55e',fillOpacity:.4}).addTo(m2).bindPopup(s.name);});
     escapeMaps['work']=m2;
-  },200);
+  },300);
 }
 
 function switchEscapeTab(tab){
   document.getElementById('escape-home').style.display=tab==='home'?'block':'none';
   document.getElementById('escape-work').style.display=tab==='work'?'block':'none';
-  const homeBtn=document.getElementById('etab-home');
-  const workBtn=document.getElementById('etab-work');
-  if(tab==='home'){
-    homeBtn.style.cssText='flex:1;padding:10px;border-radius:8px;border:1.5px solid rgba(59,130,246,.5);background:rgba(59,130,246,.15);color:#bfdbfe;font-size:13px;font-weight:700;cursor:pointer';
-    workBtn.style.cssText='flex:1;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:transparent;color:#9daacc;font-size:13px;font-weight:700;cursor:pointer';
-  } else {
-    workBtn.style.cssText='flex:1;padding:10px;border-radius:8px;border:1.5px solid rgba(139,92,246,.5);background:rgba(139,92,246,.15);color:#ddd6fe;font-size:13px;font-weight:700;cursor:pointer';
-    homeBtn.style.cssText='flex:1;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:transparent;color:#9daacc;font-size:13px;font-weight:700;cursor:pointer';
-  }
-  if(!mapsInited['home']) initEscapeMaps();
+  const t=T();
+  document.getElementById('etab-home').style.cssText=tab==='home'?'flex:1;padding:10px;border-radius:8px;border:1.5px solid rgba(59,130,246,.5);background:rgba(59,130,246,.15);color:#bfdbfe;font-size:13px;font-weight:700;cursor:pointer':'flex:1;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:transparent;color:#9daacc;font-size:13px;font-weight:700;cursor:pointer';
+  document.getElementById('etab-work').style.cssText=tab==='work'?'flex:1;padding:10px;border-radius:8px;border:1.5px solid rgba(139,92,246,.5);background:rgba(139,92,246,.15);color:#ddd6fe;font-size:13px;font-weight:700;cursor:pointer':'flex:1;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:transparent;color:#9daacc;font-size:13px;font-weight:700;cursor:pointer';
+  if(!mapsInited['home']) setTimeout(initEscapeMaps,100);
   else if(escapeMaps[tab]) setTimeout(()=>escapeMaps[tab].invalidateSize(),100);
 }
 
-function saveRoute(type){showToast(`💾 ${type==='home'?'家裡':'公共區域'}路線設定已儲存`);}
-
-function startNav(type){
-  const dest=type==='home'?'23.6478,121.4267':'23.6478,121.4267';
-  window.open(`https://maps.google.com/?daddr=${dest}&dirflg=w`,'_blank');
-}
+function saveRoute(type){ showToast('💾 OK'); }
+function startNav(type){ window.open('https://maps.google.com/?daddr=23.6478,121.4267&dirflg=w','_blank'); }
 
 async function checkRoute(type){
   const el=document.getElementById(`route-check-${type}`);
   el.style.display='block';
-  el.innerHTML=`<div style="background:#1e2a3a;border:1px solid var(--border);border-radius:8px;padding:12px;font-size:13px;color:#9daacc">🤖 AI 路況分析中...</div>`;
+  el.innerHTML=`<div style="background:#1e2a3a;border:1px solid var(--border);border-radius:8px;padding:12px;font-size:13px;color:#9daacc">🤖 AI...</div>`;
   await new Promise(r=>setTimeout(r,1200));
-  const results=[
-    {road:'台 9 線（主要路線）',status:'通暢',risk:'低',color:'#86efac',icon:'✅'},
-    {road:'省道 193 線',status:'部分路段積水',risk:'中',color:'#fde68a',icon:'⚠️'},
-    {road:'馬太鞍橋',status:'疑似損毀，避免通行',risk:'高',color:'#fca5a5',icon:'🚫'},
-  ];
-  el.innerHTML=`<div style="background:#0d1117;border:1px solid rgba(139,92,246,.3);border-radius:8px;padding:12px;margin-top:0">
-    <div style="font-size:12px;font-weight:700;color:#ddd6fe;margin-bottom:8px">🤖 AI 動態路由分析結果</div>
-    ${results.map(r=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span style="font-size:16px">${r.icon}</span><div style="flex:1"><div style="font-size:12px;font-weight:700;color:#f0f4ff">${r.road}</div><div style="font-size:11px;color:#9daacc">${r.status}</div></div><span style="font-size:11px;padding:2px 7px;border-radius:5px;background:${r.color}22;color:${r.color};font-weight:700">風險：${r.risk}</span></div>`).join('')}
-    <div style="font-size:11px;color:#ddd6fe;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.05)">📍 建議路線：<strong style="color:#86efac">台 9 線往北</strong>（馬太鞍橋已列為危險，路線已自動迴避）</div>
-  </div>`;
+  el.innerHTML=`<div style="background:#0d1117;border:1px solid rgba(139,92,246,.3);border-radius:8px;padding:12px;font-size:12px;color:#ddd6fe">🤖 AI Route OK — <span style="color:#86efac">Hwy 9 ✅</span> | <span style="color:#fde68a">Hwy 193 ⚠️</span> | <span style="color:#fca5a5">Mataaan Bridge 🚫</span></div>`;
   if(escapeMaps[type]){
-    L.polyline([[23.6320,121.4050],[23.6390,121.4150],[23.6478,121.4267]],{color:'#ef4444',weight:2,dashArray:'5,5',opacity:.6}).addTo(escapeMaps[type]).bindPopup('⚠️ 馬太鞍橋段：AI 標記為高風險，已建議迴避');
+    L.polyline([[23.6320,121.4050],[23.6478,121.4267]],{color:'#ef4444',weight:2,dashArray:'5,5',opacity:.6}).addTo(escapeMaps[type]);
   }
-  showToast('🤖 AI 路況分析完成，已更新建議路線');
+  showToast('🤖 AI OK');
 }
 
-let shelterMapInst=null;
 function locateAndFindShelter(){
   const el=document.getElementById('nearest-shelter');
-  el.textContent='⏳ 定位中...';
-  if(!navigator.geolocation){el.textContent='⚠️ 裝置不支援定位';return;}
+  el.textContent='⏳...';
+  if(!navigator.geolocation){el.textContent='⚠️ GPS not available';return;}
   navigator.geolocation.getCurrentPosition(pos=>{
-    const lat=pos.coords.latitude, lng=pos.coords.longitude;
-    let nearest=SHELTERS[0], minDist=999;
-    SHELTERS.forEach(s=>{
-      const d=Math.sqrt((s.lat-lat)**2+(s.lng-lng)**2);
-      if(d<minDist){minDist=d;nearest=s;}
-    });
-    const distKm=(minDist*111).toFixed(1);
-    el.innerHTML=`<strong style="color:#86efac">最近收容所：${nearest.name}</strong>（約 ${distKm} 公里）｜容納人數 ${nearest.capacity} 人<br><span style="font-size:11px;color:#9daacc">您的位置：${lat.toFixed(5)}, ${lng.toFixed(5)}</span>`;
+    const lat=pos.coords.latitude,lng=pos.coords.longitude;
+    let nearest=SHELTERS[0],minDist=999;
+    SHELTERS.forEach(s=>{const d=Math.sqrt((s.lat-lat)**2+(s.lng-lng)**2);if(d<minDist){minDist=d;nearest=s;}});
+    el.innerHTML=`<strong style="color:#86efac">${nearest.name}</strong> (${(minDist*111).toFixed(1)} km)`;
     const mapEl=document.getElementById('shelter-map');
     mapEl.style.display='block';
     if(shelterMapInst){shelterMapInst.remove();}
     shelterMapInst=L.map('shelter-map').setView([lat,lng],14);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors'}).addTo(shelterMapInst);
-    L.marker([lat,lng]).addTo(shelterMapInst).bindPopup('您目前的位置').openPopup();
-    SHELTERS.forEach(s=>{L.marker([s.lat,s.lng],{icon:L.divIcon({html:'🏫',className:'',iconSize:[24,24]})}).addTo(shelterMapInst).bindPopup(`${s.name}（${s.type}）容納 ${s.capacity} 人`);});
+    L.marker([lat,lng]).addTo(shelterMapInst).bindPopup('You').openPopup();
+    SHELTERS.forEach(s=>{L.marker([s.lat,s.lng],{icon:L.divIcon({html:'🏫',className:'',iconSize:[24,24]})}).addTo(shelterMapInst).bindPopup(s.name);});
     L.polyline([[lat,lng],[nearest.lat,nearest.lng]],{color:'#22c55e',weight:3}).addTo(shelterMapInst);
-  },err=>{
-    el.innerHTML='⚠️ 無法取得位置，請手動查詢。<br><a href="https://www.hl.gov.tw/ysh/" target="_blank" class="lnk">花蓮縣政府收容所資訊 →</a>';
-  },{timeout:10000,enableHighAccuracy:true});
+  },()=>{el.textContent='⚠️ GPS error';},{timeout:10000,enableHighAccuracy:true});
 }
 
-// ══════════════════════════════════════════════════════
-// 安全回報
-// ══════════════════════════════════════════════════════
-let selectedStatus=null, userCoords=null;
-const STATUS_LABELS={safe:'✅ 我安全了',injured:'🤕 我受傷了',trapped:'🆘 我受困了',proxy:'👥 代報他人'};
-
+// ── 安全回報 ──────────────────────────────────────────
 function selectStatus(s){
   selectedStatus=s;
   document.querySelectorAll('.status-btn').forEach(b=>b.style.opacity='.5');
   event.currentTarget.style.opacity='1';
   document.getElementById('report-detail').style.display='block';
-  const tw=document.getElementById('rpt-triage-wrap');
-  tw.style.display=['injured','trapped'].includes(s)?'block':'none';
+  document.getElementById('rpt-triage-wrap').style.display=['injured','trapped'].includes(s)?'block':'none';
 }
 
 function updateTriageResult(){
-  const c=document.getElementById('rpt-consciousness').value;
-  const b=document.getElementById('rpt-breathing').value;
-  const m=document.getElementById('rpt-mobility').value;
+  const t=T();
+  const c=document.getElementById('rpt-consciousness')?.value;
+  const b=document.getElementById('rpt-breathing')?.value;
+  const m=document.getElementById('rpt-mobility')?.value;
   const el=document.getElementById('triage-result');
+  if(!el)return;
   let level='',color='',bg='';
-  if(b==='absent'||c==='unresponsive'){level='🔴 即時（Immediate）— 需立即搶救';color='#fca5a5';bg='rgba(239,68,68,.15)';}
-  else if(c==='responsive'||m==='carry'||m==='immobile'){level='🟡 延遲（Delayed）— 需要醫療協助';color='#fde68a';bg='rgba(245,158,11,.15)';}
-  else if(c==='clear'&&m==='walk'){level='🟢 輕傷（Minor）— 可自行移動';color='#86efac';bg='rgba(34,197,94,.15)';}
-  else{level='⚠️ 評估中（需更多資訊）';color='#9daacc';bg='rgba(255,255,255,.05)';}
-  if(level){el.style.display='block';el.style.background=bg;el.style.color=color;el.textContent=`傷患分級：${level}`;}
+  if(b==='absent'||c==='unresponsive'){level=t.triage_immediate;color='#fca5a5';bg='rgba(239,68,68,.15)';}
+  else if(c==='responsive'||m==='carry'||m==='immobile'){level=t.triage_delayed;color='#fde68a';bg='rgba(245,158,11,.15)';}
+  else if(c==='clear'&&m==='walk'){level=t.triage_minor;color='#86efac';bg='rgba(34,197,94,.15)';}
+  else if(c||m){level=t.triage_unknown;color='#9daacc';bg='rgba(255,255,255,.05)';}
+  if(level){el.style.display='block';el.style.background=bg;el.style.color=color;el.textContent=level;}
 }
 
 function getLocation(){
   const status=document.getElementById('location-status');
   const coords=document.getElementById('location-coords');
-  status.textContent='⏳ 定位中...'; status.style.color='#9daacc';
-  if(!navigator.geolocation){status.textContent='⚠️ 裝置不支援 GPS，請手動輸入';status.style.color='#fca5a5';return;}
+  status.textContent='⏳...';status.style.color='#9daacc';
+  if(!navigator.geolocation){status.textContent='⚠️ GPS N/A';status.style.color='#fca5a5';return;}
   navigator.geolocation.getCurrentPosition(pos=>{
-    const lat=pos.coords.latitude.toFixed(6), lng=pos.coords.longitude.toFixed(6);
-    userCoords={lat,lng};
-    status.textContent='✅ 定位成功';status.style.color='#86efac';
+    const lat=pos.coords.latitude.toFixed(6),lng=pos.coords.longitude.toFixed(6);
+    userCoords={lat,lng};status.textContent='✅';status.style.color='#86efac';
     coords.style.display='block';
-    document.getElementById('coords-text').textContent=`緯度：${lat}　經度：${lng}`;
-    document.getElementById('coords-map-link').innerHTML=`<a href="https://maps.google.com/?q=${lat},${lng}" target="_blank" class="lnk">在 Google Maps 確認位置 →</a>`;
+    document.getElementById('coords-text').textContent=`${lat}, ${lng}`;
+    document.getElementById('coords-map-link').innerHTML=`<a href="https://maps.google.com/?q=${lat},${lng}" target="_blank" class="lnk">Google Maps →</a>`;
     const cur=document.getElementById('rpt-location').value;
     if(!cur) document.getElementById('rpt-location').value=`GPS (${lat}, ${lng})`;
-    else document.getElementById('rpt-location').value=`${cur}｜GPS: ${lat},${lng}`;
-  },err=>{
-    const msgs={1:'已拒絕定位權限，請手動輸入地址。',2:'無法取得位置，請手動輸入。',3:'定位逾時，請手動輸入。'};
-    status.textContent='⚠️ '+(msgs[err.code]||'定位失敗');status.style.color='#fca5a5';
-  },{timeout:10000,enableHighAccuracy:true});
+    else document.getElementById('rpt-location').value=`${cur} | GPS: ${lat},${lng}`;
+  },()=>{status.textContent='⚠️ GPS error';status.style.color='#fca5a5';},{timeout:10000,enableHighAccuracy:true});
 }
 
-const REPORT_LOG=[];
-let reportMapInst=null;
-const reportMarkers=[];
-
-// 初始化回報地圖
 function initReportMap(){
-  if(reportMapInst) return;
+  if(reportMapInst)return;
+  if(!document.getElementById('report-map'))return;
   reportMapInst=L.map('report-map').setView([23.6432,121.4187],13);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-    attribution:'© OpenStreetMap contributors',maxZoom:19
-  }).addTo(reportMapInst);
-  // 預設幾個模擬已審核的回報標記
-  const demoReports=[
-    {lat:23.6320,lng:121.4050,status:'injured',name:'居民A',loc:'大馬村',people:2,time:'10:32'},
-    {lat:23.6478,lng:121.4267,status:'safe',  name:'居民B',loc:'光榮村',people:4,time:'10:45'},
-    {lat:23.6389,lng:121.4187,status:'trapped',name:'居民C',loc:'省道193線',people:1,time:'11:02'},
-  ];
-  const statusColor={safe:'#86efac',injured:'#fde68a',trapped:'#fca5a5',proxy:'#ddd6fe'};
-  const statusLabel={safe:'安全',injured:'受傷',trapped:'受困',proxy:'代報'};
-  demoReports.forEach(r=>{
-    const icon=L.divIcon({
-      html:`<div style="width:14px;height:14px;border-radius:50%;background:${statusColor[r.status]};border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4)"></div>`,
-      className:'',iconSize:[14,14],iconAnchor:[7,7]
-    });
-    L.marker([r.lat,r.lng],{icon}).addTo(reportMapInst)
-     .bindPopup(`<div style="font-size:12px;line-height:1.7"><strong>${statusLabel[r.status]}</strong>・${r.loc}<br>${r.people}人・${r.time}<br><span style="font-size:10px;color:#888">✅ 情資中心已審核</span></div>`);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:19}).addTo(reportMapInst);
+  const demo=[{lat:23.6320,lng:121.4050,status:'injured'},{lat:23.6478,lng:121.4267,status:'safe'},{lat:23.6389,lng:121.4187,status:'trapped'}];
+  const sColor={safe:'#86efac',injured:'#fde68a',trapped:'#fca5a5',proxy:'#ddd6fe'};
+  demo.forEach(r=>{
+    L.circleMarker([r.lat,r.lng],{radius:8,color:sColor[r.status],fillColor:sColor[r.status],fillOpacity:.5}).addTo(reportMapInst);
   });
 }
 
 function addReportMarker(entry){
-  if(!reportMapInst) initReportMap();
-  // 若有 GPS 座標，使用真實座標；否則用隨機偏移示意
-  const statusColor={safe:'#86efac',injured:'#fde68a',trapped:'#fca5a5',proxy:'#ddd6fe'};
-  const statusLabel={safe:'安全',injured:'受傷',trapped:'受困',proxy:'代報'};
-  const lat=entry.coords ? parseFloat(entry.coords.lat) : 23.6432 + (Math.random()-.5)*.02;
-  const lng=entry.coords ? parseFloat(entry.coords.lng) : 121.4187 + (Math.random()-.5)*.02;
-  const icon=L.divIcon({
-    html:`<div style="width:16px;height:16px;border-radius:50%;background:${statusColor[entry.status]||'#9daacc'};border:2px solid #fff;box-shadow:0 1px 6px rgba(0,0,0,.5);animation:pulse-marker 1.5s ease infinite"></div>`,
-    className:'',iconSize:[16,16],iconAnchor:[8,8]
-  });
-  const t=new Date(entry.timestamp).toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'});
-  const marker=L.marker([lat,lng],{icon}).addTo(reportMapInst)
-    .bindPopup(`<div style="font-size:12px;line-height:1.8"><strong>${statusLabel[entry.status]||entry.status}</strong>・${entry.location}<br>${entry.people}人・${t}<br>${entry.triage?entry.triage+'<br>':''}<span style="font-size:10px;color:#f59e0b">⏳ 待情資中心審核</span></div>`);
+  if(!reportMapInst)initReportMap();
+  const sColor={safe:'#86efac',injured:'#fde68a',trapped:'#fca5a5',proxy:'#ddd6fe'};
+  const lat=entry.coords?parseFloat(entry.coords.lat):23.6432+(Math.random()-.5)*.02;
+  const lng=entry.coords?parseFloat(entry.coords.lng):23.6187+(Math.random()-.5)*.02;
+  L.circleMarker([lat,lng],{radius:10,color:sColor[entry.status]||'#9daacc',fillColor:sColor[entry.status]||'#9daacc',fillOpacity:.5}).addTo(reportMapInst)
+   .bindPopup(`${T().rpt_status_labels[entry.status]||entry.status}<br>${entry.location}`);
   reportMapInst.setView([lat,lng],14);
-  reportMarkers.push(marker);
 }
 
 function submitReport(){
-  const name=document.getElementById('rpt-name').value.trim();
-  const loc=document.getElementById('rpt-location').value||'未填寫';
-  const ppl=document.getElementById('rpt-people').value||'1';
-  const note=document.getElementById('rpt-note').value;
+  const t=T();
+  const name=document.getElementById('rpt-name')?.value.trim();
+  const loc=document.getElementById('rpt-location')?.value||'?';
+  const ppl=document.getElementById('rpt-people')?.value||'1';
+  const note=document.getElementById('rpt-note')?.value;
   const helps=[...document.querySelectorAll('#page-report .check-item input:checked')].map(c=>c.value);
   const triage=document.getElementById('triage-result')?.textContent||'';
-  const entry={timestamp:new Date().toISOString(),status:selectedStatus,name:name||'匿名',location:loc,coords:userCoords,people:ppl,needs:helps,triage,note};
+  const entry={timestamp:new Date().toISOString(),status:selectedStatus,name:name||'Anon',location:loc,coords:userCoords,people:ppl,needs:helps,triage,note};
   REPORT_LOG.unshift(entry);
   renderReportLog();
-  // 加到地圖
   addReportMarker(entry);
-  // 捲到地圖
-  setTimeout(()=>{
-    document.getElementById('report-map').scrollIntoView({behavior:'smooth',block:'center'});
-    if(reportMapInst) reportMapInst.invalidateSize();
-  },300);
-  showToast('✅ 回報已送出，標記已加入地圖，待情資中心審核後正式顯示');
+  setTimeout(()=>{document.getElementById('report-map')?.scrollIntoView({behavior:'smooth',block:'center'});if(reportMapInst)reportMapInst.invalidateSize();},300);
+  showToast('✅ OK');
   document.getElementById('report-detail').style.display='none';
   document.getElementById('location-coords').style.display='none';
   document.getElementById('location-status').textContent='';
@@ -1092,87 +1860,26 @@ function submitReport(){
 
 function renderReportLog(){
   const el=document.getElementById('report-log');
-  if(!REPORT_LOG.length){el.innerHTML=`<div style="color:var(--muted);font-size:13px;text-align:center;padding:14px 0">尚未送出任何回報</div>`;return;}
-  const txtC={safe:'134,239,172',injured:'253,230,138',trapped:'252,165,165',proxy:'221,214,254'};
-  const bgA ={safe:'34,197,94', injured:'245,158,11',trapped:'239,68,68', proxy:'139,92,246'};
+  if(!el)return;
+  const t=T();
+  if(!REPORT_LOG.length){el.innerHTML=`<div style="color:var(--muted);font-size:13px;text-align:center;padding:14px 0">${t.rpt_log_empty}</div>`;return;}
+  const sColor={safe:'34,197,94',injured:'245,158,11',trapped:'239,68,68',proxy:'139,92,246'};
+  const sTxt={safe:'134,239,172',injured:'253,230,138',trapped:'252,165,165',proxy:'221,214,254'};
   el.innerHTML=REPORT_LOG.map(r=>{
-    const t=new Date(r.timestamp).toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-    const coordLink=r.coords?`<a href="https://maps.google.com/?q=${r.coords.lat},${r.coords.lng}" target="_blank" class="lnk" style="margin-left:6px">📍地圖</a>`:'';
+    const ts=new Date(r.timestamp).toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    const coordLink=r.coords?`<a href="https://maps.google.com/?q=${r.coords.lat},${r.coords.lng}" target="_blank" class="lnk" style="margin-left:6px">📍</a>`:'';
     return `<div style="display:flex;gap:9px;padding:9px 0;border-bottom:1px solid var(--border);align-items:flex-start">
-      <span style="font-size:10px;color:#9daacc;min-width:50px;margin-top:3px">${t}</span>
-      <span style="padding:2px 8px;border-radius:6px;background:rgba(${bgA[r.status]},.2);color:rgb(${txtC[r.status]});font-size:10px;font-weight:700;flex-shrink:0">${STATUS_LABELS[r.status]}</span>
-      <div style="flex:1;font-size:12px;color:#b0bedd"><div>${r.name!=='匿名'?'<strong style="color:#f0f4ff">'+r.name+'</strong>・':''} ${r.location}${coordLink}</div>${r.triage?`<div style="font-size:10px;margin-top:2px;color:#9daacc">${r.triage}</div>`:''}<div style="font-size:10px;color:#9daacc;margin-top:1px">${r.people}人${r.needs.length?'・需要：'+r.needs.join('、'):''}</div></div>
+      <span style="font-size:10px;color:#9daacc;min-width:50px;margin-top:3px">${ts}</span>
+      <span style="padding:2px 8px;border-radius:6px;background:rgba(${sColor[r.status]||'139,92,246'},.2);color:rgb(${sTxt[r.status]||'221,214,254'});font-size:10px;font-weight:700;flex-shrink:0">${t.rpt_status_labels[r.status]||r.status}</span>
+      <div style="flex:1;font-size:12px;color:#b0bedd"><div>${r.name} ${r.location}${coordLink}</div>${r.triage?`<div style="font-size:10px;color:#9daacc">${r.triage}</div>`:''}</div>
     </div>`;
   }).join('');
 }
 
-// ══════════════════════════════════════════════════════
-// AI 影像辨識
-// ══════════════════════════════════════════════════════
+// ── AI 影像辨識 ───────────────────────────────────────
 let currentImageBase64=null;
-let aiMapInst=null;
-let aiCoords=null;
-
-// AI 頁 GPS 定位
-function getAiLocation(){
-  const status=document.getElementById('ai-location-status');
-  status.textContent='⏳ 定位中...';status.style.color='#9daacc';
-  if(!navigator.geolocation){status.textContent='⚠️ 不支援定位';status.style.color='#fca5a5';return;}
-  navigator.geolocation.getCurrentPosition(pos=>{
-    const lat=pos.coords.latitude.toFixed(6), lng=pos.coords.longitude.toFixed(6);
-    aiCoords={lat,lng};
-    status.textContent='✅ 定位成功';status.style.color='#86efac';
-    const wrap=document.getElementById('ai-coords-wrap');
-    wrap.style.display='block';
-    document.getElementById('ai-coords-text').textContent=`緯度：${lat}　經度：${lng}`;
-    const cur=document.getElementById('ai-location-text').value;
-    if(!cur) document.getElementById('ai-location-text').value=`GPS (${lat}, ${lng})`;
-    else document.getElementById('ai-location-text').value=`${cur}｜GPS: ${lat},${lng}`;
-  },err=>{
-    const msgs={1:'已拒絕定位權限',2:'無法取得位置',3:'定位逾時'};
-    status.textContent='⚠️ '+(msgs[err.code]||'定位失敗')+'，請手動輸入地址';
-    status.style.color='#fca5a5';
-  },{timeout:10000,enableHighAccuracy:true});
-}
-
-// 人工直接送出（不需 AI）
-function submitManualReport(){
-  const loc=document.getElementById('ai-location-text').value;
-  const hazard=document.getElementById('ai-hazard-manual').value;
-  const severity=document.getElementById('ai-severity-manual').value;
-  const note=document.getElementById('ai-note-manual').value;
-  if(!loc){showToast('⚠️ 請填寫地點');return;}
-  if(!hazard){showToast('⚠️ 請選擇災害類型');return;}
-  const manual={
-    hazard_type: hazard,
-    severity: severity||'unknown',
-    description: note||hazard,
-    immediate_action: severity==='critical'||severity==='high'?'禁止通行，請迴避此路段':'謹慎通行，注意安全',
-    safe_for_evacuation: severity!=='critical'&&severity!=='high',
-    location: loc,
-    coords: aiCoords,
-    source: '人工回報',
-    timestamp: new Date().toISOString()
-  };
-  document.getElementById('ai-result-wrap').style.display='block';
-  const sevColor={low:'#86efac',medium:'#fde68a',high:'#fca5a5',critical:'#fca5a5',unknown:'#9daacc'};
-  document.getElementById('ai-summary').innerHTML=`
-    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
-      <span style="font-size:20px">${hazard==='無明顯災害'?'✅':'⚠️'}</span>
-      <strong style="font-size:14px;color:#f0f4ff">${hazard}</strong>
-      <span style="padding:2px 8px;border-radius:6px;background:${sevColor[severity]||'#9daacc'}22;color:${sevColor[severity]||'#9daacc'};font-size:11px;font-weight:700">${(severity||'未填寫').toUpperCase()}</span>
-      <span style="padding:2px 7px;border-radius:5px;background:rgba(59,130,246,.2);color:#93c5fd;font-size:10px;font-weight:700">人工回報</span>
-    </div>
-    <div style="color:#b0bedd;margin-bottom:5px">${note||'（無補充說明）'}</div>
-    <div style="font-size:12px;color:#9daacc;margin-top:4px">地點：${loc}</div>
-    <div style="margin-top:6px"><span style="font-size:12px;font-weight:700;color:${manual.safe_for_evacuation?'#86efac':'#fca5a5'}">${manual.safe_for_evacuation?'✅ 此路線可通行疏散':'🚫 此路線不建議通行'}</span></div>`;
-  document.getElementById('ai-json').textContent=JSON.stringify(manual,null,2);
-  showToast('✅ 人工回報已建立，可點「標註至防災地圖」送出');
-}
-
 function handleImageUpload(e){
-  const file=e.target.files[0];
-  if(!file)return;
+  const file=e.target.files[0];if(!file)return;
   const reader=new FileReader();
   reader.onload=ev=>{
     currentImageBase64=ev.target.result.split(',')[1];
@@ -1182,136 +1889,129 @@ function handleImageUpload(e){
   };
   reader.readAsDataURL(file);
 }
-
 function clearImage(){
   currentImageBase64=null;
   document.getElementById('img-preview-wrap').style.display='none';
   document.getElementById('ai-result-wrap').style.display='none';
   document.getElementById('img-upload').value='';
 }
-
 async function analyzeImage(){
-  if(!currentImageBase64){showToast('⚠️ 請先上傳照片');return;}
+  if(!currentImageBase64){showToast('⚠️ No image');return;}
   document.getElementById('ai-loading').style.display='block';
   document.getElementById('ai-result-wrap').style.display='none';
   try{
     const response=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1000,
-        messages:[{
-          role:'user',
-          content:[
-            {type:'image',source:{type:'base64',media_type:'image/jpeg',data:currentImageBase64}},
-            {type:'text',text:`你是一個災害評估 AI。分析這張照片，判斷是否有積水、坍方、道路損毀等災害情況。
-請用繁體中文回答，並以 JSON 格式輸出：
-{
-  "hazard_type": "積水/坍方/道路損毀/建物受損/無明顯災害",
-  "severity": "low/medium/high/critical",
-  "water_depth_estimate": "積水深度估計（如有）",
-  "description": "20字以內的中文描述",
-  "immediate_action": "建議的緊急處置",
-  "safe_for_evacuation": true/false
-}
-只輸出 JSON，不要其他文字。`}
-          ]
-        }]
-      })
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:[
+        {type:'image',source:{type:'base64',media_type:'image/jpeg',data:currentImageBase64}},
+        {type:'text',text:'Analyze this disaster photo. Output ONLY JSON: {"hazard_type":"flooding/landslide/road damage/building damage/none","severity":"low/medium/high/critical","water_depth_estimate":"if applicable","description":"20 chars","immediate_action":"brief","safe_for_evacuation":true/false}'}
+      ]}]})
     });
     const data=await response.json();
     const text=data.content?.map(c=>c.text||'').join('');
-    let parsed;
-    try{parsed=JSON.parse(text.replace(/```json|```/g,'').trim());}
-    catch{parsed={hazard_type:'無法解析',severity:'unknown',description:'AI 回傳格式異常',safe_for_evacuation:false};}
+    let parsed;try{parsed=JSON.parse(text.replace(/```json|```/g,'').trim());}catch{parsed={hazard_type:'Unknown',severity:'unknown',description:'Parse error',safe_for_evacuation:false};}
     document.getElementById('ai-loading').style.display='none';
     document.getElementById('ai-result-wrap').style.display='block';
-    const sevColor={low:'#86efac',medium:'#fde68a',high:'#fca5a5',critical:'#fca5a5',unknown:'#9daacc'};
-    document.getElementById('ai-summary').innerHTML=`
-      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
-        <span style="font-size:20px">${parsed.hazard_type==='無明顯災害'?'✅':'⚠️'}</span>
-        <strong style="font-size:14px;color:#f0f4ff">${parsed.hazard_type}</strong>
-        <span style="padding:2px 8px;border-radius:6px;background:${sevColor[parsed.severity]}22;color:${sevColor[parsed.severity]};font-size:11px;font-weight:700">${parsed.severity?.toUpperCase()}</span>
-      </div>
-      <div style="color:#b0bedd;margin-bottom:5px">${parsed.description}</div>
-      ${parsed.water_depth_estimate?`<div style="font-size:12px;color:#9daacc">積水深度：${parsed.water_depth_estimate}</div>`:''}
-      <div style="font-size:12px;color:#9daacc;margin-top:5px">建議行動：${parsed.immediate_action}</div>
-      <div style="margin-top:6px"><span style="font-size:12px;font-weight:700;color:${parsed.safe_for_evacuation?'#86efac':'#fca5a5'}">${parsed.safe_for_evacuation?'✅ 此路線可通行疏散':'🚫 此路線不建議通行'}</span></div>`;
+    const sc={low:'#86efac',medium:'#fde68a',high:'#fca5a5',critical:'#ef4444',unknown:'#9daacc'};
+    document.getElementById('ai-summary').innerHTML=`<strong style="color:#f0f4ff">${parsed.hazard_type}</strong> · <span style="color:${sc[parsed.severity]}">${parsed.severity}</span><br>${parsed.description}<br><span style="font-size:12px;font-weight:700;color:${parsed.safe_for_evacuation?'#86efac':'#fca5a5'}">${parsed.safe_for_evacuation?'✅':'🚫'}</span>`;
     document.getElementById('ai-json').textContent=JSON.stringify(parsed,null,2);
-    // 同步回人工輸入欄位，讓使用者可以修改
-    if(parsed.hazard_type) document.getElementById('ai-hazard-manual').value=parsed.hazard_type;
-    if(parsed.severity) document.getElementById('ai-severity-manual').value=parsed.severity;
-    if(parsed.description) document.getElementById('ai-note-manual').value=parsed.description+(parsed.water_depth_estimate?`\n積水深度：${parsed.water_depth_estimate}`:'');
+    if(parsed.hazard_type){const sel=document.getElementById('ai-hazard-manual');if(sel)for(let i=0;i<sel.options.length;i++){if(sel.options[i].value===parsed.hazard_type){sel.selectedIndex=i;break;}}}
+    if(parsed.severity){const sel=document.getElementById('ai-severity-manual');if(sel)for(let i=0;i<sel.options.length;i++){if(sel.options[i].value===parsed.severity){sel.selectedIndex=i;break;}}}
   }catch(err){
     document.getElementById('ai-loading').style.display='none';
-    // Demo fallback
-    const demo={hazard_type:'積水',severity:'medium',water_depth_estimate:'約 30-50 公分',description:'道路積水，部分路面不可見',immediate_action:'繞行台 9 線，避免此路段',safe_for_evacuation:false};
     document.getElementById('ai-result-wrap').style.display='block';
-    document.getElementById('ai-summary').innerHTML=`<div style="color:#fde68a;margin-bottom:6px">⚠️ API 連線失敗，顯示 Demo 結果</div><strong style="color:#f0f4ff">${demo.hazard_type}</strong>・<span style="color:#fca5a5">${demo.severity}</span><div style="color:#b0bedd;margin-top:5px">${demo.description}</div><div style="font-size:12px;color:#9daacc;margin-top:4px">積水深度：${demo.water_depth_estimate}</div>`;
+    const demo={hazard_type:'積水',severity:'medium',water_depth_estimate:'30-50cm',description:'Demo result',immediate_action:'Use Hwy 9',safe_for_evacuation:false};
+    document.getElementById('ai-summary').innerHTML=`<span style="color:#fde68a">⚠️ Demo mode</span><br>${demo.hazard_type} · ${demo.severity}`;
     document.getElementById('ai-json').textContent=JSON.stringify(demo,null,2);
   }
+}
+
+function getAiLocation(){
+  const status=document.getElementById('ai-location-status');
+  status.textContent='⏳...';status.style.color='#9daacc';
+  if(!navigator.geolocation){status.textContent='⚠️ N/A';status.style.color='#fca5a5';return;}
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const lat=pos.coords.latitude.toFixed(6),lng=pos.coords.longitude.toFixed(6);
+    aiCoords={lat,lng};status.textContent='✅';status.style.color='#86efac';
+    const wrap=document.getElementById('ai-coords-wrap');
+    if(wrap){wrap.style.display='block';document.getElementById('ai-coords-text').textContent=`${lat}, ${lng}`;}
+    const cur=document.getElementById('ai-location-text')?.value;
+    if(cur==='') document.getElementById('ai-location-text').value=`GPS (${lat}, ${lng})`;
+  },()=>{status.textContent='⚠️ error';status.style.color='#fca5a5';},{timeout:10000,enableHighAccuracy:true});
+}
+
+function submitManualReport(){
+  const loc=document.getElementById('ai-location-text')?.value;
+  const hazard=document.getElementById('ai-hazard-manual')?.value;
+  const severity=document.getElementById('ai-severity-manual')?.value;
+  const note=document.getElementById('ai-note-manual')?.value;
+  if(!loc||!hazard){showToast('⚠️ Required');return;}
+  const manual={hazard_type:hazard,severity:severity||'unknown',description:note||hazard,immediate_action:['high','critical'].includes(severity)?'Do not enter':'Proceed carefully',safe_for_evacuation:!['critical','high'].includes(severity),location:loc,coords:aiCoords,source:'Manual',timestamp:new Date().toISOString()};
+  document.getElementById('ai-result-wrap').style.display='block';
+  document.getElementById('ai-summary').innerHTML=`<strong style="color:#f0f4ff">${hazard}</strong> · ${severity}<br><span style="font-size:11px;color:#9daacc">${loc}</span>`;
+  document.getElementById('ai-json').textContent=JSON.stringify(manual,null,2);
+  showToast('✅ OK');
 }
 
 function markOnMap(){
   const mapEl=document.getElementById('ai-map');
   mapEl.style.display='block';
   if(aiMapInst){aiMapInst.remove();}
-  // 讀取人工輸入或 AI 結果
-  const hazard=document.getElementById('ai-hazard-manual').value||'災情回報';
-  const severity=document.getElementById('ai-severity-manual').value||'unknown';
-  const loc=document.getElementById('ai-location-text').value||'未填寫地點';
-  const note=document.getElementById('ai-note-manual').value||'';
-  // 座標：優先用 GPS，否則用花蓮光復鄉預設
+  const hazard=document.getElementById('ai-hazard-manual')?.value||'?';
+  const severity=document.getElementById('ai-severity-manual')?.value||'unknown';
+  const loc=document.getElementById('ai-location-text')?.value||'?';
   const lat=aiCoords?parseFloat(aiCoords.lat):23.6355+(Math.random()-.5)*.01;
   const lng=aiCoords?parseFloat(aiCoords.lng):121.4098+(Math.random()-.5)*.01;
-  const sevColor={low:'#86efac',medium:'#fde68a',high:'#fca5a5',critical:'#ef4444',unknown:'#9daacc'};
+  const sc={low:'#86efac',medium:'#fde68a',high:'#fca5a5',critical:'#ef4444',unknown:'#9daacc'};
   aiMapInst=L.map('ai-map').setView([lat,lng],15);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors'}).addTo(aiMapInst);
-  L.circleMarker([lat,lng],{
-    radius:16,
-    color:sevColor[severity]||'#9daacc',
-    fillColor:sevColor[severity]||'#9daacc',
-    fillOpacity:.35,
-    weight:2
-  }).addTo(aiMapInst).bindPopup(
-    `<div style="font-size:12px;line-height:1.8">
-      <strong>${hazard}</strong>・${severity.toUpperCase()}<br>
-      📍 ${loc}<br>
-      ${note?note+'<br>':''}
-      <span style="font-size:10px;color:#f59e0b">⏳ 待情資中心審核</span>
-    </div>`
-  ).openPopup();
-  showToast('📍 AI 驗證風險區已標註至地圖');
+  L.circleMarker([lat,lng],{radius:16,color:sc[severity]||'#9daacc',fillColor:sc[severity]||'#9daacc',fillOpacity:.35,weight:2}).addTo(aiMapInst).bindPopup(`⚠️ ${hazard}・${severity}<br>📍 ${loc}`).openPopup();
+  showToast('📍 OK');
 }
 
 function copyJson(){
-  const text=document.getElementById('ai-json').textContent;
-  navigator.clipboard?.writeText(text).then(()=>showToast('📋 JSON 已複製'));
+  const text=document.getElementById('ai-json')?.textContent;
+  if(text) navigator.clipboard?.writeText(text).then(()=>showToast('📋 OK'));
 }
 
-// ══════════════════════════════════════════════════════
-// 圖表
-// ══════════════════════════════════════════════════════
-let chartsInited=false;
+// ── 圖表 ──────────────────────────────────────────────
 function initCharts(){
   chartsInited=true;
+  const wc=document.getElementById('waterChart');
+  const rc=document.getElementById('rainChart');
+  if(!wc||!rc)return;
   const labels=['7/26','8/1','8/8','8/12','8/20','9/1','9/10','9/15','9/21','9/22','9/23'];
-  new Chart(document.getElementById('waterChart'),{type:'line',data:{labels,datasets:[{label:'水位（公尺）',data:[1085,1090,1100,1115,1135,1138,1139,1139.5,1140.2,1140.22,1145],borderColor:'#3b82f6',backgroundColor:'rgba(59,130,246,.1)',tension:.4,fill:true,pointRadius:4,pointBackgroundColor:'#3b82f6'},{label:'警戒水位 1139m',data:Array(11).fill(1139),borderColor:'#ef4444',borderDash:[5,5],pointRadius:0,borderWidth:1.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#6b7a99',font:{size:11}}}},scales:{x:{ticks:{color:'#6b7a99',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7a99',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'},min:1080}}}});
-  new Chart(document.getElementById('rainChart'),{type:'bar',data:{labels,datasets:[{label:'累積雨量（mm）',data:[20,35,60,180,40,55,70,90,150,200,380],backgroundColor:labels.map((_,i)=>i>=9?'rgba(239,68,68,.7)':'rgba(59,130,246,.5)'),borderColor:labels.map((_,i)=>i>=9?'#ef4444':'#3b82f6'),borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#6b7a99',font:{size:11}}}},scales:{x:{ticks:{color:'#6b7a99',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7a99',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'}}}}}); 
+  new Chart(wc,{type:'line',data:{labels,datasets:[
+    {label:'Water Level (m)',data:[1085,1090,1100,1115,1135,1138,1139,1139.5,1140.2,1140.22,1145],borderColor:'#3b82f6',backgroundColor:'rgba(59,130,246,.1)',tension:.4,fill:true,pointRadius:4,pointBackgroundColor:'#3b82f6'},
+    {label:'Warning 1139m',data:Array(11).fill(1139),borderColor:'#ef4444',borderDash:[5,5],pointRadius:0,borderWidth:1.5}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#6b7a99',font:{size:11}}}},scales:{x:{ticks:{color:'#6b7a99',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7a99',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'},min:1080}}}});
+  new Chart(rc,{type:'bar',data:{labels,datasets:[
+    {label:'Rainfall (mm)',data:[20,35,60,180,40,55,70,90,150,200,380],backgroundColor:labels.map((_,i)=>i>=9?'rgba(239,68,68,.7)':'rgba(59,130,246,.5)'),borderColor:labels.map((_,i)=>i>=9?'#ef4444':'#3b82f6'),borderWidth:1}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#6b7a99',font:{size:11}}}},scales:{x:{ticks:{color:'#6b7a99',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7a99',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'}}}}}); 
 }
 
-// ══════════════════════════════════════════════════════
-// Toast
-// ══════════════════════════════════════════════════════
+// ── Toast ─────────────────────────────────────────────
 function showToast(msg){
   const t=document.getElementById('toast');
   t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),3000);
 }
 
-// 初始化
-renderLights();renderLogs();
+// ── 初始化 ────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded',()=>{
+  renderNav();
+  renderFlow();
+  renderControl();
+  renderEscape();
+  renderReport();
+  renderAI();
+  renderMonitor();
+  renderSources();
+  // 確保第一頁 active
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-flow').classList.add('active');
+  renderNav();
+});
 </script>
 </body>
 </html>
